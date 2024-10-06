@@ -41,13 +41,27 @@ Prototype works with preliminary test Kernal ROM.
 
 # SCHEMATICS
 
-[TODO]
+[TODO: Provide proper diagrams]
 
-Clock generator picture.
-[add pic]
+This is the clock adjustment and quadrature generator. It is based on the SuperPet schematics.
+It takes φ0 (C64 clock) as input, this is sent through a 4049 to raise it from TTL to CMOS levels. This is used as the 6309 E-Clock.
+The same signal is fed to a 74LS123 to generate the quadrature Q-Clock that runs 90 degrees out of phase.
 
-6309 and signal tranlation.
-[add pic]
+![clock adjustment and quadrature](media/2024-10-05_circuit_2.jpg)
+
+The variable resistors can be adjusted to define the shape and phase of the quadrature clock. These are there to debug the prototype, and can be replaced with fixed resistors of ideal value.
+
+These are the clocks as fed to the 6309:
+
+![clock adjustment and quadrature](media/2024-10-05_clocks.jpg)
+
+The remaining logic is required to translate some 6510 signals to 6309 signals.
+At the moment, the 6510 AEC is inverted using a 74HC00 to drive 6309 TSC.
+The 74LS08 is not yet used, but will probably be needed to properly handle other signals later.
+
+Note that the picture has a lot of unneeded wires used to experiment and to feed the logic probe.
+
+![clock adjustment and quadrature](media/2024-10-05_circuit_2.jpg)
 
 # KERNAL ROM
 
