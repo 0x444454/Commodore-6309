@@ -91,9 +91,10 @@ Ahem... better demos will come in the future.
 
 ![6309 running](media/2024-10-05_6309_running.jpg)
 
-This is the ROM execution visualized using a logic probe. Open the image in a new window to see it bigger.
+This is the ROM execution visualized using a logic probe. Open the image in a new window to see it bigger.  
 Note that the first thing the 6309 does is fetching the 16-bit reset vector at $FFFE/$FFFF.  
-Then it begins executing the ROM from address $E000.
+Then it begins executing the ROM from address $E000.  
+
 NOTE: My logic probe only has 16 inputs, so I had to use the upper two bits for Clock and R/W. Decoded addresses in hex at the bottom will have incorrect bit 14 and 15.
 
 ![logic probe commented](media/2024-10-05_probe_commented.jpg)
