@@ -19,6 +19,12 @@ Do not proceed further unless you accept that you are trying this mod...
 
 ## AT YOUR OWN RISK !!!
 
+# LICENSE
+
+Creative Commons, CC BY
+
+https://creativecommons.org/licenses/by/4.0/deed.en
+
 # CURRENT STATUS
 
 _"It's alive! It's alive! It's alive!"_
