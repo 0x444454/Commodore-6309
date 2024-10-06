@@ -8,7 +8,7 @@ Be sure to read the disclaimer below.
 
 This is an experimental project and may contain flaws and errors.  
 I use a disposable C64, which I can sacrifice in the name of science.  
-I am perfectly aware that this is a new, unofficial mod and I could fry/lose my C64 in case of any issue. I just don't care.  
+I am perfectly aware that this is a new, unofficial mod I have just barely tested, and I know I could fry/lose my C64 in case of any issue. I just don't care.  
 Don't try this on your main C64 machine.  
   
 **IMPORTANT**: You can damage your C64 if improper connections are made.  
