@@ -43,9 +43,10 @@ Prototype works with preliminary test Kernal ROM.
 
 [TODO: Provide proper diagrams]
 
-This is the clock adjustment and quadrature generator. It is based on the SuperPet schematics.
-It takes φ0 (C64 clock) as input, this is sent through a 4049 to raise it from TTL to CMOS levels. This is used as the 6309 E-Clock.
-The same signal is fed to a 74LS123 to generate the quadrature Q-Clock that runs 90 degrees out of phase.
+This is the clock adjustment and quadrature generator. It is based on the SuperPet schematics.  
+It takes φ0 (C64 clock) as input, this is sent through a 4049 to raise it from TTL to CMOS levels. This is used as the 6309 E-Clock.  
+The same signal is fed to a 74LS123 to generate the quadrature Q-Clock that runs 90 degrees out of phase.  
+NOTE: I like color marking pins of chips to prevent wrong connections: Green is input, Blue is output.
 
 ![clock adjustment and quadrature](media/2024-10-05_circuit_2.jpg)
 
