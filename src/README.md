@@ -5,13 +5,13 @@ The ROM works with both the 6309 and 6510 as the CPU.
 Yes, it's a 6510 but uses 6502 instructions. Hence the file name.
 Build with TASS:
 
-```64tass.exe" -b -o "rom_6502_reset.bin" -L "rom_6502_reset.lst" -a rom_6502_reset.asm```
+```64tass -b -o rom_6502_reset.bin -L rom_6502_reset.lst -a rom_6502_reset.asm```
 
 # BUILD THE 6309 CODE
 
 Build with LWASM:
 
-```lwasm --abs --6309 -o rom/1-k6309.rom rom.asm```
+```lwasm --abs --6309 -o 1-k6309.rom rom.asm```
 
 The source file includes the "rom_6502_reset.bin" file as binary.
 
