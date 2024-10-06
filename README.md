@@ -74,7 +74,7 @@ I use the _BackBit CornBit_ flash ROM to simplify development.
 
 - Write the "1-k6309.rom" file on a 8 KByte ROM (EPROM or Flash).
 - Replace the original Kernal ROM with the 6309 ROM.
-- Power on the system with the 6510. You should see the message "6510 detected. insert 6309". This is to verify your ROM is programmed successfully. __Do NOT insert the 6309 directly in the 6510 socket__. You need the adapter circuit described in the achematics.
+- Power on the system with the 6510. You should see the message "6510 detected. insert 6309". This is to verify your ROM is programmed successfully. __Do NOT insert the 6309 directly in the 6510 socket__. You need the adapter circuit described in the schematics.
 - Check the schematics.
 - Implement the translation circuit as per schematics.
 - Double-check the schematics.
