@@ -51,17 +51,17 @@ The same signal is fed to a 74LS123 to generate the quadrature Q-Clock that runs
 
 The variable resistors can be adjusted to define the shape and phase of the quadrature clock. These are there to debug the prototype, and can be replaced with fixed resistors of ideal value.
 
-These are the clocks as fed to the 6309:
+These are the clocks as fed to the 6309. They are a bit noisy in this prototype but work ok:
 
 ![clock adjustment and quadrature](media/2024-10-05_clocks.jpg)
 
 The remaining logic is required to translate some 6510 signals to 6309 signals.
-At the moment, the 6510 AEC is inverted using a 74HC00 to drive 6309 TSC.
+At the moment, the 6510's AEC signal is inverted using a 74HC00 to drive the 6309's TSC (see the blue&magenta wires).
 The 74LS08 is not yet used, but will probably be needed to properly handle other signals later.
 
 Note that the picture has a lot of unneeded wires used to experiment and to feed the logic probe.
 
-![clock adjustment and quadrature](media/2024-10-05_circuit_2.jpg)
+![clock adjustment and quadrature](media/2024-10-05_circuit_1.jpg)
 
 # KERNAL ROM
 
@@ -94,3 +94,8 @@ Note that the first thing the 6309 does is fetching the 16-bit reset vector at $
 Then it begins executing the ROM from address $E000.
 
 ![logic probe commented](media/2024-10-05_probe_commented.jpg)
+
+# NEXT STEPS
+
+- Provide better examples.
+- Create open source PCB files.
