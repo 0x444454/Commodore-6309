@@ -86,6 +86,8 @@ I use the __BackBit CornBit__ flash ROM to simplify development.
 # RESULT
 
 At the moment, the 6309 Kernal ROM only sets up the VIC-II and prints some characters on screen.
+Exciting! ;-)
+Ahem, better demos will come in the future.
 
 ![6309 running](media/2024-10-05_6309_running.jpg)
 
