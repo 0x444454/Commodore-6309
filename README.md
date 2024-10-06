@@ -75,8 +75,8 @@ At the moment, the 6309 Kernal ROM only sets up the VIC-II and prints some chara
 
 ![6309 running](media/2024-10-05_6309_running.jpg)
 
-This is the ROM execution visualized using a logic probe.
+This is the ROM execution visualized using a logic probe. Open the image in a new window to see it bigger.
 Note that the first thing the 6309 does is fetching the 16-bit reset vector at $FFFE/$FFFF.  
 Then it begins executing the ROM from address $E000.
 
-![6309 running](media/2024-10-05_6309_probe_commented.jpg)
+![logic probe commented](media/2024-10-05_probe_commented.jpg)
