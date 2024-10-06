@@ -22,3 +22,9 @@ Use your EPROM or Flash programmer to create the replacement C64 kernel using th
 # REPLACE ROM
 
 Replace your C64 ROM with the one you just programmed.
+
+# LICENSE
+
+Creative Commons, CC BY
+
+https://creativecommons.org/licenses/by/4.0/deed.en
