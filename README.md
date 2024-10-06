@@ -38,11 +38,11 @@ Prototype works with preliminary test Kernal ROM.
 - C64. I have a classic 250407 motherboard, but this should work with all models (to be verified).
 - Hitachi 6309E. Note the "E" at the end.
 - Support Logic for clock quadrature: 74LS123, 4049.
-- Support Logic for signal translation: 74HC00, 74LS08.
+- Support Logic for signals translation: 74HC00, 74LS08.
 - Some resistors.
 - Some capacitors.
 - 40-pin socket to plug/solder the signal wires. You don't want to alter the onboard CPU socket, because you may want to plug the 6510 there again eventually ;-)
-- Breeadboard(s) for external logic.
+- Breadboard(s) for external logic. I use one for the clock and another for the signals translation.
 - Lots of wires.
 - Replacement Kernal ROM.
 
