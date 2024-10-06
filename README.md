@@ -68,13 +68,13 @@ Note that the picture has a lot of unneeded wires used to experiment and to feed
 
 The Kernal ROM for the prototype works with both 6309 and 6510 (they have different reset vectors).
 At the moment, the Kernal only sets up the VIC-II and prints some characters on screen.
-I use the __BackBit CornBit__ flash ROM to simplify development.
+I use the _BackBit CornBit_ flash ROM to simplify development.
 
 # PREPARATION
 
 - Write the "1-k6309.rom" file on a 8 KByte ROM (EPROM or Flash).
 - Replace the original Kernal ROM with the 6309 ROM.
-- Power on the system with the 6510. You should see the message "6510 detected. insert 6309". This is to verify your ROM is programmed successfully.
+- Power on the system with the 6510. You should see the message "6510 detected. insert 6309". This is to verify your ROM is programmed successfully. __Do NOT insert the 6309 direct;y in the 6510 socket__. You need the adapter circuit described in the achematics.
 - Check the schematics.
 - Implement the translation circuit as per schematics.
 - Double-check the schematics.
