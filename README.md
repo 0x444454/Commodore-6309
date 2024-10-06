@@ -69,4 +69,8 @@ I use the __BackBit CornBit__ flash ROM to simplify development.
 - Power on the C64. If you don't see a screen with red border, white background, and colored characters in less than 3 seconds, then turn off your C64 immediately and troubleshoot the circuit.
 - At any time, you can plug-in the 6510 again to verify you didn't fry anything.
 
+# RESULT
 
+At the moment, the 6309 Kernal ROM only sets up the VIC-II and prints some characters on screen.
+
+![6309 running](media/2024-10-05_6309_running.jpg)
