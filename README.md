@@ -29,7 +29,7 @@ Please add a link to this github project.
 
 # CURRENT STATUS
 
-_"It's alive! It's alive! It's alive!"_
+_"Alive! It's alive! It's alive!"_
 
 Prototype works with preliminary test Kernal ROM.
 
