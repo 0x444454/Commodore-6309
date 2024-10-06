@@ -74,3 +74,9 @@ I use the __BackBit CornBit__ flash ROM to simplify development.
 At the moment, the 6309 Kernal ROM only sets up the VIC-II and prints some characters on screen.
 
 ![6309 running](media/2024-10-05_6309_running.jpg)
+
+This is the ROM execution visualized using a logic probe.
+Note that the first thing the 6309 does is fetching the 16-bit reset vector at $FFFE/$FFFF.  
+Then it begins executing the ROM from address $E000.
+
+![6309 running](media/2024-10-05_6309_probe_commented.jpg)
