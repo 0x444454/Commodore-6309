@@ -31,7 +31,8 @@ Please add a link to this github project.
 
 _"Alive! It's alive! It's alive!"_
 
-Prototype works with preliminary test Kernal ROM.
+Prototype works with preliminary test Kernal ROM, running very simple code.
+There are still random timing issues when VIC-II DMA happens while some complex instructions are executing. This is probably due to incomplete handling of the 6510 RDY signal (which is currently simply routed to 6309 /HALT). The /HALT signal does not work exactly like RDY, so clock stretching is probably needed to fix this. The current breadboard prototype does not allow precise timings, so this will need to be studied and fixed using a prototype PCB.
 
 # INGREDIENTS
 
@@ -97,7 +98,7 @@ I use the _BackBit CornBit_ flash ROM to simplify development.
 
 At the moment, the 6309 Kernal ROM only sets up the VIC-II and prints some characters on screen.  
 Exciting! ;-)  
-Ahem... better demos will come in the future.
+Ahem... better demos will come in the future, but first the 6510 RDY signal must be translated more accurately to prevent random VIC-II DMA conflicts.
 
 ![6309 running](media/2024-10-05_6309_running.jpg)
 
@@ -111,5 +112,7 @@ NOTE: My logic probe only has 16 inputs, so I had to use the upper two bits for 
 
 # NEXT STEPS
 
+- Design prototype PCB (open source) to improve timing precision. This is required for debugging.
+- Verify/implement proper RDY signal translation to fix random VIC-II DMA conflicts.
 - Provide better examples.
-- Create open source PCB files.
+
