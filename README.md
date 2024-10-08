@@ -32,6 +32,7 @@ Please add a link to this github project.
 _"Alive! It's alive! It's alive!"_
 
 Prototype works with preliminary test Kernal ROM, running very simple code.  
+
 There are still random timing issues when VIC-II DMA happens while some complex instructions are executing. This is probably due to incomplete handling of the 6510 RDY signal (which is currently simply routed to 6309 /HALT). The /HALT signal does not work exactly like RDY, so clock stretching is probably needed to fix this. The current breadboard prototype does not allow precise timings, so this will need to be studied and fixed using a prototype PCB.
 
 # INGREDIENTS
