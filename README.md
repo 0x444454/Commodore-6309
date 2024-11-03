@@ -109,6 +109,10 @@ NOTE: My logic probe only has 16 inputs, so I had to use the upper two bits for 
 
 ![logic probe commented](media/2024-10-05_probe_commented.jpg)
 
+And this is my fixed point Mandelbrot generator. The 40x25 image is generated in about 1.5 seconds using max_iters = 16.
+
+![6309 mandel](media/20241102-6309-mandel.jpg)
+
 # NEXT STEPS
 
 - Design prototype PCB (open source) to improve timing precision and make prototyping more comfortable.
