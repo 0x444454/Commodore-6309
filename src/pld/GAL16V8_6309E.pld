@@ -1,0 +1,68 @@
+/*******************************************************************/
+/*         Commodore-6309 GAL16V8 logic                            */
+/*       This is for the 6809 "E" version                          */
+/*      GAL is clocked using inverted Phi-0 @ 1 MHz                */
+/*                                                                 */
+/* Revision history [authors in square brackets]:                  */
+/*   2012-03-15: Liber809 Atari version [Boisy Pitre]              */
+/*   2024-10-16: First C64 prototype. [DDT]                        */
+/*   2024-11-02: Second C64 prototype with clock-stretching. [DDT] */
+/*******************************************************************/
+
+Name     Commodore6309 ;
+PartNo   U1 ;
+Date     11/02/2024 ;
+Revision 01 ;
+Designer DDT ;
+Company  None ;
+Assembly None ;
+Location None ;
+Device   G16V8A ;
+
+/*************** INPUT PINS *********************/
+PIN  1 = CLK; /* !Phi-0 in, used for falling-edge latch. This is actually the NOT_PH0 output looped-back */
+PIN  2 = RST;
+PIN  3 = PH0; /* Phi-0 in (system clock) */
+PIN  4 = Q_IN;
+PIN  5 = RDY;
+PIN  6 = AEC;
+PIN  7 = RW;
+/* PIN  8 = ; */
+/* PIN  9 = ; */
+/* PIN 10 = GND; */ /* Not assignable: GAL GND */
+
+/* PIN 11 = !OE ; */ /* Not assignable: GAL /OE, connect to GND */
+
+/**************** OUTPUT PINS *********************/
+/* These signals go to the 6510 socket */
+
+PIN 12 = Q0;          /* Counter Q0 */
+PIN 13 = Q1;          /* Counter Q1 */
+PIN 14 = RW_OUT; /* R/W out. */
+PIN 15 = TSC; /* TSC out */
+PIN 16 = NOT_HALT; /* 6309 /HALT */
+PIN 17 = Q_OUT;
+PIN 18 = E;
+PIN 19 = NOT_PH0     ; /* !Phi-0 is the opposite of PH0, slightly delayed, and will be wired to CLK (pin 1) allowing latch on Phi-0 falling edge */
+/* PIN 20 = Vcc ; */
+
+
+
+/* Delay Phi-0 to generate Phi-2 */
+/* Phi-0 is looped back to CLK using a trace on the PCB */
+NOT_PH0    =   !PH0;
+
+TSC        =   !AEC;     /* TSC is the opposite of AEC */
+RW_OUT     =   RW # TSC; /* Mimick Liber809 */
+NOT_HALT   =   RDY;
+
+E        = PH0 & RDY;    /* Clock stretch if !RDY). */
+Q_OUT    = Q_IN & RDY;   /* Clock stretch if !RDY). */
+
+
+
+/* Two bits counter for 6502 simulation of RDY low */
+/* These are not yet used */
+Q0.d = !RDY & ((Q1 & Q0) # !Q0);
+Q1.d = !RDY & (Q1 # Q0);
+
