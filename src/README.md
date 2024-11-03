@@ -9,7 +9,8 @@ Build with TASS:
 
 # BUILD THE 6309 CODE
 
-Build with LWASM:
+Edit the code to enable the test/demo you want.  
+Then build with LWASM:
 
 ```lwasm --abs --6309 -o 1-k6309.rom rom.asm```
 
