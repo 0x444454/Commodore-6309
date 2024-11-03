@@ -67,10 +67,9 @@ They are a bit noisy in this prototype but work ok:
 
 ![clock adjustment and quadrature](media/2024-10-05_clocks.jpg)
 
-A GAL16V8 is used to translate some 6510 signals to 6309 signals.
-NOTE: The pictures here are old (pre-GAL), and show 74x logic chips. Pictures will be updated soon.
-
-Note that the picture has a lot of extra wires used to experiment and to feed the logic probe.
+A GAL16V8 is used to translate some 6510 signals to 6309 signals.  
+NOTE: The pictures here are old (pre-GAL), and show 74x logic chips. Pictures will be updated soon.  
+Also note a lot of extra wires used to experiment and to feed the logic probe.  
 
 ![clock adjustment and quadrature](media/2024-10-05_circuit_1.jpg)
 
