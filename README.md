@@ -57,9 +57,10 @@ Problem is being investigated. More info here:
 
 # SCHEMATICS
 
-See the hardware section: ![hardware](./hardware/)
+See the hardware section: [hardware](./hardware/)
 
-A GAL16V8 is used to translate some 6510 signals to 6309 signals.  
+A proper PCB is work in progress.  
+Here is how the current prototype looks like:
 
 ![clock adjustment and quadrature](media/2025-01-08-prototype.jpg)
 
