@@ -57,7 +57,7 @@ Problem is being investigated. More info here:
 
 # SCHEMATICS
 
-See the hardware section: (hardware/)
+See the hardware section: ![hardware](./hardware/)
 
 A GAL16V8 is used to translate some 6510 signals to 6309 signals.  
 
