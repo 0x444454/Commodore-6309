@@ -24,14 +24,25 @@ Use your EPROM or Flash programmer to create the replacement C64 kernel using th
 
 Replace your C64 ROM with the one you just programmed.
 
-# TEST FUNCTIONS
+# 6309 TEST FUNCTIONS
 
-ROM starts continuously calculating Mandelbrot sets, rendered in Color RAM (chars in Screen RAM are not affected).  
+Upon reset with the 6309 PCB installed, the ROM starts continuously calculating Mandelbrot sets, rendered in Color RAM (chars in Screen RAM are not affected).  
 After each set is calculated, the joystick in port 2 is checked:
 - FIRE: Freeze until released.
 - RIGHT: Enable raster interrupt (you'll see some yellow border lines at a specific vertical position on screen).
 - DOWN: Fill Screen RAM with all zeros ('@').
 - UP: Enable sprites. Each time, a new sprite is enabled (up to 8). This test currently fails and it's being investigated.
+- LEFT: [no function yet]
+
+# 6510 TEST FUNCTIONS
+
+The 6309 Kernal is also compatible with the 6510 to perform quick tests/comparisons.
+Upon reset with the 6510 installed, the ROM enables all 8 sprites and prints a text message asking to install the 6309 PCB.  
+The joystick in port 2 commands the following tests:
+- FIRE: [no function yet].
+- RIGHT: Enable raster interrupt (you'll see some yellow border lines at a specific vertical position on screen).
+- DOWN: [no function yet]
+- UP: [no function yet]
 - LEFT: [no function yet]
 
 # LICENSE
