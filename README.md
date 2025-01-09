@@ -86,9 +86,9 @@ I use the _BackBit CornBit_ flash ROM to simplify development.
 
 # RESULT
 
-At the moment, the 6309 Kernal ROM only sets up the VIC-II and runs a test program, like printing text, running diagnostics or a Mandelbrot generator.
-Exciting! ;-)  
-Ahem... better demos will come in the future.
+At the moment, the 6309 Kernal ROM only sets up the VIC-II and runs a test program, like printing text, running diagnostics or a Mandelbrot generator.  
+IRQ is supported (e.g. VIC-II raster interrupts).  
+Better demos will come in the future.
 
 ![6309 running](media/2024-10-05_6309_running.jpg)
 
