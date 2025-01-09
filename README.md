@@ -59,7 +59,8 @@ Problem is being investigated. More info here:
 
 See the hardware section: [hardware](./hardware/)
 
-A proper PCB is work in progress.  
+A **proper** PCB is work in progress.  
+
 Here is how the current prototype looks like:
 
 ![clock adjustment and quadrature](media/2025-01-08-prototype.jpg)
