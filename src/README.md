@@ -24,6 +24,16 @@ Use your EPROM or Flash programmer to create the replacement C64 kernel using th
 
 Replace your C64 ROM with the one you just programmed.
 
+# TEST FUNCTIONS
+
+ROM starts continuously calculating Mandelbrot sets, rendered in Color RAM (chars in Screen RAM are not affected).  
+After each set is calculated, the joystick in port 2 is checked:
+- FIRE: Freeze until released.
+- RIGHT: Enable raster interrupt (you'll see some yellow border lines at a specific vertical position on screen).
+- DOWN: Fill Screen RAM with all zeros ('@').
+- UP: Enable sprites. Each time, a new sprite is enabled (up to 8). This test currently fails and it's being investigated.
+- LEFT: [no function yet]
+
 # LICENSE
 
 Creative Commons, CC BY
