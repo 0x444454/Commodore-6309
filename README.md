@@ -61,7 +61,7 @@ See the hardware section: ![hardware](hardware/)
 
 A GAL16V8 is used to translate some 6510 signals to 6309 signals.  
 
-![clock adjustment and quadrature](media/2024-10-05_circuit_1.jpg)
+![clock adjustment and quadrature](media/2025-01-08-prototype.jpg)
 
 # KERNAL ROM
 
