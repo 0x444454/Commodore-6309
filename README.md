@@ -47,7 +47,7 @@ Problem is being investigated. More info here:
 
 - C64. I have a classic 250407 motherboard, but this should work with all models (to be verified).
 - Hitachi 63C09E. Note the "E" at the end.
-- Support Logic for clock quadrature: DS1100Z-250 delay line.
+- Support Logic for clock delays and quadrature: DS1100Z-250 delay line.
 - Support Logic for 6510 to 6309 signals translation: GAL16V8.
 - 40-pin socket to plug/solder the signal wires, because we don't want to alter the onboard CPU socket. We may want to plug the 6510 there again eventually ;-)
 - Breadboard(s) for the three external chips (63C09E, GAL16V8, DS1100Z-250).
