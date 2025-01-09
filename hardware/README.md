@@ -1,7 +1,7 @@
 # Commodore-6309 hardware
 
 Here are the KiCad 8 hardware design files.
-Schematics are also available as a plain PDF.
+Schematics are also available as a plain PDF.  
 At the moment, you can find the schematics.
 PCB is still work in progress and not yet available.
 
