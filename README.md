@@ -96,13 +96,13 @@ This is the ROM execution visualized using a logic probe. Open the image in a ne
 Note that the first thing the 6309 does is fetching the 16-bit reset vector at $FFFE/$FFFF.  
 Then it begins executing the ROM from address $E000.  
 
-NOTE: My logic probe only has 16 inputs, so I had to use the upper two bits for Clock and R/W. Decoded addresses in hex at the bottom will have incorrect bit 14 and 15.
+NOTE: My old logic probe only had 16 inputs, so I had to use the upper two bits for Clock and R/W. Decoded addresses in hex at the bottom will have incorrect bit 14 and 15.
 
 ![logic probe commented](media/2024-10-05_probe_commented.jpg)
 
   
 And this is my fixed point Mandelbrot generator. The 40x25 image is generated in about 1.5 seconds using max_iters = 16.  
-Note the random (flickering) missing characters pixel lines, due to timing issues still to fix.
+Note the random missing characters pixel lines, due to timing issues that have been fixed after taking this picture.
 
 ![6309 mandel](media/20241102-6309-mandel.jpg)
 
