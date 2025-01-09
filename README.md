@@ -31,8 +31,9 @@ Please add a link to this github project.
 
 _"Alive! It's alive! It's alive!"_
 
-Prototype works with preliminary test Kernal ROM, running very simple code, such as a fixed-point Mandelbrot set generator.
-IRQ are working (FIRQ are also working, but the C64 only has one IRQ type so we currently only use IRQ).
+Prototype works with preliminary test Kernal ROM, running very simple code, such as a fixed-point Mandelbrot set generator.  
+IRQ is working.
+FIRQ is also functional, but the C64 only has one IRQ type so we currently opetd for IRQ.
 
 As of 2025-Jan-01, the system supports running generic code.  
 IRQ are also working (tested with VIC-II raster interrupt).  
