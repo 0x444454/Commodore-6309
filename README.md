@@ -32,44 +32,33 @@ Please add a link to this github project.
 _"Alive! It's alive! It's alive!"_
 
 Prototype works with preliminary test Kernal ROM, running very simple code, such as a fixed-point Mandelbrot set generator.
+IRQ are working (FIRQ are also working, but the C64 only has one IRQ type so we currently only use IRQ).
 
-As of 2024-Nov-02, a GAL16V8 has been added to the design to help handling signals.
-Clock stretching seems to have resolved the conflict with VIC-II DMA access (e.g. bad-lines).
-However, the prototype still has some timing issues, visible as flickering character lines on screen.
+As of 2025-Jan-01, the system supports running generic code.  
+IRQ are also working (tested with VIC-II raster interrupt).  
+
+There are problems enabling sprites. Even one single sprite will cause the system to crash.  
+This might be due to prototype wiring using a breadboard (signal timings and power issues).  
+Problem is being investigated. More info here:  
+[TODO: link to logic analyzer screenshot]
 
 # INGREDIENTS
 
 - C64. I have a classic 250407 motherboard, but this should work with all models (to be verified).
-- Hitachi 6309E. Note the "E" at the end.
-- Support Logic for clock quadrature: 74LS123, 4049, some resistors, some capacitors.
+- Hitachi 63C09E. Note the "E" at the end.
+- Support Logic for clock quadrature: DS1100Z-250 delay line.
 - Support Logic for 6510 to 6309 signals translation: GAL16V8.
 - 40-pin socket to plug/solder the signal wires, because we don't want to alter the onboard CPU socket. We may want to plug the 6510 there again eventually ;-)
-- Breadboard(s) for external logic. I use one for the clock and another for the signals translation.
+- Breadboard(s) for the three external chips (63C09E, GAL16V8, DS1100Z-250).
 - Lots of wires.
-- Replacement Kernal ROM.
+- Replacement 6309 Kernal ROM.
 
 
 # SCHEMATICS
 
-[TODO: Provide proper diagrams]
-
-This is the clock adjustment and quadrature generator. It is based on the SuperPet schematics.  
-It takes φ0 (C64 CPU clock) as input, this is sent through a 4049 to raise it from TTL to CMOS levels. This is used as the 6309 E-Clock.  
-The same signal is fed to a 74LS123 to generate the quadrature Q-Clock that runs 90 degrees out of phase.  
-NOTE: I like color marking pins of chips to prevent wrong connections: Green is input, Blue is output.
-
-![clock adjustment and quadrature](media/2024-10-05_circuit_2.jpg)
-
-The variable resistors can be adjusted to define the shape and phase of the quadrature clock. These are there to debug the prototype, and can be replaced with fixed resistors of ideal value.
-
-These are the clocks as fed to the 6309. Orange is φ0 (E-Clock), Blue is the generated Q-Clock.
-They are a bit noisy in this prototype but work ok:
-
-![clock adjustment and quadrature](media/2024-10-05_clocks.jpg)
+See the hardware section: ![hardware](hardware/)
 
 A GAL16V8 is used to translate some 6510 signals to 6309 signals.  
-NOTE: The pictures here are old (pre-GAL), and show 74x logic chips. Pictures will be updated soon.  
-Also note a lot of extra wires used to experiment and to feed the logic probe.  
 
 ![clock adjustment and quadrature](media/2024-10-05_circuit_1.jpg)
 
