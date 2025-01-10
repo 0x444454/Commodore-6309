@@ -48,7 +48,7 @@ Problem is being investigated. Screenshot of the problem here: [Sprites Problem]
 - 40-pin socket to plug/solder the signal wires, because we don't want to alter the onboard CPU socket. We may want to plug the 6510 there again eventually ;-)
 - Breadboard(s) for the three external chips (63C09E, GAL16V8, DS1100Z-250).
 - Lots of wires.
-- Replacement 6309 Kernal ROM.
+- Replacement 6309 Kernal ROM. I use BackBit's CornBit (2364) Flash ROM.
 
 
 # SCHEMATICS
@@ -77,7 +77,7 @@ I use the _BackBit CornBit_ flash ROM to simplify development.
 - Double-check the schematics.
 - Correct any errors.
 - Triple-check the schematics and make sure you made no mistakes.
-- Remove the 6510 and plug in its socket the 40-pin socket that connects the translation circuit to the 6309.
+- Remove the 6510 and plug in its socket the 40-pin header that connects the translation circuit to the 6309.
 - Power on the C64. If you don't see a screen with red border, white background, and colored characters in less than 3 seconds, then turn off your C64 immediately and troubleshoot the circuit.
 - At any time, you can plug-in the 6510 again to verify you didn't fry anything.
 
