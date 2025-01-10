@@ -32,12 +32,10 @@ Please add a link to this github project.
 _"Alive! It's alive! It's alive!"_
 
 Prototype works with preliminary test Kernal ROM, running test code like a fixed-point Mandelbrot set generator.  
-IRQ is working. FIRQ is also functional, but the C64 only has one IRQ signal, so we opted to support IRQ and disabled FIRQ.
+IRQ is working. FIRQ is also functional, but the C64 only has one IRQ signal, so we opted to support IRQ and disabled FIRQ.  
+VIC-II raster interrupts are working.
 
-As of 2025-Jan-01, the system supports running generic code.  
-IRQ are also working (tested with VIC-II raster interrupt).  
-
-There are problems enabling sprites. Even one single sprite will cause the system to crash.  
+There are problems after enabling sprites. Even one single sprite will cause the system to crash.  
 This might be due to prototype wiring using a breadboard (signal timings and power issues).  
 Problem is being investigated. Screenshot of the problem here: [Sprites Problem](media/20250104-Sprites_DMA_conflict.jpg)
 
