@@ -71,9 +71,9 @@ I use the _BackBit CornBit_ flash ROM to simplify development.
 
 - Write the desired ".rom" file on a 8 KByte ROM (EPROM or Flash).
 - Replace the original Kernal ROM with the 6309 ROM.
-- Power on the system with the 6510. You should see the message "6510 detected. insert 6309 with adapter". This is to verify your ROM is programmed successfully. __Do NOT insert the 6309 directly in the 6510 socket__. You need the adapter circuit described in the schematics.
+- Power on the system with the 6510. You should see the message "6510 detected. insert 6309 with adapter". This is to verify your ROM is programmed successfully. __Do NOT insert the 6309 directly in the 6510 socket__. You need the adapter circuit described in the [schematics](./hardware/).
 - Check the schematics.
-- Implement the translation circuit as per schematics (which are not yet available... sorry).
+- Implement the translation circuit as per schematics .
 - Double-check the schematics.
 - Correct any errors.
 - Triple-check the schematics and make sure you made no mistakes.
@@ -83,7 +83,7 @@ I use the _BackBit CornBit_ flash ROM to simplify development.
 
 # RESULT
 
-At the moment, the 6309 Kernal ROM only sets up the VIC-II and runs a test program, like printing text, running diagnostics or a Mandelbrot generator.  
+At the moment, the 6309 Kernal ROM only sets up the VIC-II, CIA1, and runs a test program, like printing text, running diagnostics and a Mandelbrot generator.  
 IRQ is supported (e.g. VIC-II raster interrupts).  
 Better demos will come in the future.
 
@@ -106,4 +106,5 @@ Note the random missing characters pixel lines, due to timing issues that have b
 # NEXT STEPS
 
 - Design prototype PCB (open source) to improve timing precision and make prototyping more comfortable.
+- Add floppy drive support to kick NitrOS-9 loader.
 
