@@ -105,6 +105,8 @@ Note the random missing characters pixel lines, due to timing issues that have b
 
 # NEXT STEPS
 
-- Design prototype PCB (open source) to improve timing precision and make prototyping more comfortable.
-- Add floppy drive support to kick NitrOS-9 loader.
+- Design prototype PCB daughterboard the plugs into the 6510 socket. This will improve timing precision and make prototyping more comfortable.
+- Add floppy drive support to kick NitrOS-9 loader, or run a generic 6309 program from RAM.
+- Inplement a minimalistic CPU monitor in ROM.
+- Improve the prototype and design a final version using the Expansion Port.
 
