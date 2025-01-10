@@ -57,7 +57,7 @@ See the hardware section: [hardware](./hardware/)
 
 A **proper** PCB is work in progress.  
 
-Here is how the current prototype looks like (half of the wires are for debugging using the logic probe):
+Here is how the current prototype looks like (half of the wires are for debugging using the logic analyzer):
 
 ![clock adjustment and quadrature](media/2025-01-08-prototype.jpg)
 
