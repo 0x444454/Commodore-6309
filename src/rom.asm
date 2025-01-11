@@ -19,7 +19,7 @@ init:
 
 ; Switch from 6809 emulation mode (default) to 6309 native mode.
         
-        LDMD #$01  ; This also sets the FIRQ handling mode (bit 1) but we don't use IRQ (yet).
+        LDMD #$01  ; This also sets the FIRQ handling mode (bit 1). Note that the hardware prototype uses IRQ.
  
 ; Setup the stack pointers
         LDS #$7000
