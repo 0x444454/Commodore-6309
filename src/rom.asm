@@ -187,7 +187,7 @@ loop_clsram:
         RTS
 
 ;===========================================================
-; Print A as a hex number on the upper-left corner of the screen.
+; Print A as a hex number on the upper-right corner of the screen.
 ; NOTE: Registers are preserved.
 
 print_A_hex:
