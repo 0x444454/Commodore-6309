@@ -7,7 +7,7 @@
 ;
 ; How to use:
 ; - Define USE_KERNAL as required.
-; - Use 64TASS Assembler.
+; - Use 64TASS Assembler. Should work with other assemblers with minimal changes.
 ; - Load program and run.
 ; - Program will load the first file ("*") found on disk starting from address $8000.
 ; - Wait until load completed or error (nothing will happen on screen).
@@ -40,6 +40,15 @@ end_BASIC:
 
 
 main:  
+            ; Make top line of characters white to highlight result.
+            LDX #40
+            LDA #1
+highlight:  STA $D800,X
+            DEX
+            BPL highlight
+            
+            ; Prepare for load.
+            
             LDA #filename_end - filename
             LDX #<filename
             LDY #>filename
@@ -110,6 +119,9 @@ LOAD_ADDR = $8000
 
 found_EOF:
             ; Read completed.
+            ; Make border green (success).
+            LDA #5
+            STA $D020
             ; Print OK in the upper-left corner.
             .enc "screen"
             LDA #'o'
@@ -261,7 +273,7 @@ ok_filename:
                 LDA $90                 ; get the serial status byte
                 LSR                     ; shift time out read ..
                 LSR                     ; .. into carry bit
-                BCS file_not_found ; if timed out go do file not found error and return
+                BCS file_not_found      ; if timed out go do file not found error and return
                 JSR recv_serial_byte    ; input byte from serial bus
                 STA $AF                 ; save program start address high byte
                 TXA                     ; copy secondary address
@@ -721,7 +733,7 @@ label_EE3E:
                 LDA $A5         ; get the serial bus bit count
                 BEQ label_EE47  ; if not already EOI then go flag EOI
                 LDA #$02        ; else error $02, read timeour
-                JMP $EDB2       ; set the serial status and exit
+                JMP label_EDB2  ; set the serial status and exit
 label_EE47:                
                 JSR set_ser_data_out_low ; set the serial data out low
                 JSR set_ser_clock_out_high ; set the serial clock out high
