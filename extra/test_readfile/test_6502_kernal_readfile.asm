@@ -15,6 +15,7 @@
 ;
 ; Revision history [authors in square brackets]:
 ;   2025-01-11: First version. [DDT]
+;   2025-01-12: More complete (simulate power-on) init [DDT]
 
 USE_KERNAL = 0 ; Set to 1 to use KERNAL routines. Set to 0 to test our extracted code in RAM.
 
@@ -46,6 +47,38 @@ main:
 highlight:  STA $D800,X
             DEX
             BPL highlight
+            
+            
+.if !USE_KERNAL
+            ; Be sure we are totally independent from KERNAL.
+            ; For proper no-kernal load test, we disable all ROMs and only leave RAM + I/O space.
+            SEI                     ; Disable interrupts for this critical section.
+            LDA $01                 ; Get processor port value.
+            AND #$F8                ; Don't mess with tape stuff (we don't support tape).
+            ORA #$05                ; We only want RAM and I/O mapped. Kiss ROMs goodbye.
+            STA $01                 ; Set processor port.
+            ; LOAD seems to need IRQ for timings, so we setup the 6502 IRQ vector in RAM @ $FFFE (remember: ROM is gone).
+            LDA #<irq_handler
+            STA $FFFE
+            LDA #>irq_handler
+            STA $FFFF
+            ; Now clear system variables currently in use, as our custom ROM will start from scratch.
+            LDA #$00
+            TAX
+cl_sysvars:
+            CPX #$02                ; Skip processor port ($00 and $01).
+            BCC skip_pport          ; Less than.
+            STA $0000,X
+skip_pport: STA $0100,X
+            STA $0200,X
+            STA $0300,X
+            INX
+            BNE cl_sysvars
+            
+            JSR init_chipset        ; Init chipset.
+            JSR init_serial         ; Init CIA2 for serial communications.
+            CLI                     ; Re-enable interrupts after this critical section.
+.endif
             
             ; Prepare for load.
             
@@ -83,31 +116,14 @@ LOAD_ADDR = $8000
 ;            JSR print_A_hex
 ;            JMP read_byte
 
+            LDX #<LOAD_ADDR
+            LDY #>LOAD_ADDR
+            LDA #0                   ; 0 = Load, 1 = Verify
 .if USE_KERNAL    
             ; Load file with KERNAL ROM.
-            LDX #<LOAD_ADDR
-            LDY #>LOAD_ADDR
-            LDA #0                   ; 0 = Load, 1 = Verify
             JSR KERNAL_LOAD
 .else
-            ; Load file without KERNAL ROM (i.e. using only our extracted routines in RAM).
-            ; For proper no-kernal load test, we disable all ROMs and only leave RAM + I/O space.
-            SEI                     ; Disable interrupts for this critical section.
-            LDA $01                 ; Get processor port value.
-            AND #$F8                ; Don't mess with tape stuff (we don't support tape).
-            ORA #$05                ; We only want RAM and I/O mapped. Kiss ROMs goodbye.
-            STA $01                 ; Set processor port.
-            ; LOAD seems to need IRQ for timings, so we setup the 6502 IRQ vector in RAM @ $FFFE (remember: ROM is gone).
-            LDA #<irq_handler
-            STA $FFFE
-            LDA #>irq_handler
-            STA $FFFF
-            CLI                     ; Re-enable interrupts after this critical section.
-            
             ; Do raw LOAD.
-            LDX #<LOAD_ADDR
-            LDY #>LOAD_ADDR
-            LDA #0                   ; 0 = Load, 1 = Verify
             JSR raw_LOAD
 .endif
             
@@ -233,6 +249,21 @@ raw_SETLFS:
                 STY $B9         ; save the secondary address
                 RTS  
                 
+
+;===========================================================
+; Initialize serial port.
+init_serial:
+                LDA #$7F        ; disable all interrupts
+                STA $DD0D       ; save CIA2 ICR
+                LDA #$06        ; set serial DTR output, serial RTS output
+                STA $DD03       ; save CIA2 DDRB, serial port
+                STA $DD01       ; save CIA2 DRB, serial port
+                LDA #$04        ; mask xxxx x1xx, set serial Tx DATA high
+                ORA $DD00       ; OR it with CIA2 DRA, serial port and video address
+                STA $DD00       ; save CIA2 DRA, serial port and video address
+                LDY #$00        ; clear Y
+                STY $02A1       ; clear the serial interrupt enable byte
+                RTS
                 
 ;===========================================================
 ; Raw LOAD routine, same as Kernal LOAD call.
@@ -833,7 +864,7 @@ label_F0AA:
                 AND #$03         ; mask 0000 00xx, the error bits
                 BNE label_F0AA   ; if there are errors loop
                 LDA #$10         ; disable FLAG interrupt
-                STA $DD0D        ; save VIA 2 ICR
+                STA $DD0D        ; save CIA2 ICR
                 LDA #$00         ; clear A
                 STA $02A1        ; clear the RS-232 interrupt enable byte
 ser_interrupts_not_enabled:
@@ -895,6 +926,80 @@ label_F6DA:
                 STA $91         ; save the stop key column
 label_F6DC:
                 RTS 
+     
+;===========================================================
+; Init SID, CIA and timer IRQ.
+init_chipset:
+                JSR init_VIC_and_screen
+                JSR init_SID_CIA_and_timer_IRQ
+                RTS
+     
+;===========================================================
+; Initialise VIC and screen editor
+init_VIC_and_screen: ; Was $FF5B
+                ;JSR $E518       ; initialise the screen and keyboard
+wait_raster_0:  LDA $D012       ; read the raster compare register
+                BNE wait_raster_0 ; loop if not raster line $00
+                LDA $D019       ; read the vic interrupt flag register
+                AND #$01        ; mask the raster compare flag
+                STA $02A6       ; save the PAL/NTSC flag (PAL=1, NTSC=0).
+                JMP set_timings              
+                
+;===========================================================
+; Init SID, CIA and timer IRQ.
+init_SID_CIA_and_timer_IRQ: ; Was $FDA3
+                LDA #$7F        ; disable all interrupts
+                STA $DC0D       ; save CIA1 ICR
+                STA $DD0D       ; save CIA2 ICR
+                STA $DC00       ; save CIA1 DRA, keyboard column drive
+                LDA #$08        ; set timer single shot
+                STA $DC0E       ; save CIA1 CRA
+                STA $DD0E       ; save CIA2 CRA
+                STA $DC0F       ; save CIA1 CRB
+                STA $DD0F       ; save CIA2 CRB
+                LDX #$00        ; set all inputs
+                STX $DC03       ; save CIA1 DDRB, keyboard row
+                STX $DD03       ; save CIA2 DDRB, RS232 port
+                STX $D418       ; clear the volume and filter select register
+                DEX             ; set X = $FF
+                STX $DC02       ; save CIA1 DDRA, keyboard column
+                LDA #$07        ; DATA out high, CLK out high, ATN out high, RE232 Tx DATA
+                                ; high, video address 15 = 1, video address 14 = 1
+                STA $DD00       ; save CIA2 DRA, serial port and video address
+                LDA #$3F        ; set serial DATA input, serial CLK input
+                STA $DD02       ; save CIA2 DDRA, serial port and video address
+                
+                ; [DDT] Do NOT change memory map.
+                ;LDA #$E7        ; set 1110 0111, motor off, enable I/O, enable KERNAL, enable BASIC
+                ;STA $01         ; save the 6510 I/O port
+                ;LDA #$2F        ; set 0010 1111, 0 = input, 1 = output
+                ;STA $00         ; save the 6510 I/O port direction register
+set_timings:    ; Was $FDDD            
+                LDA $02A6       ; get the PAL/NTSC flag
+                BEQ set_NTSC_timing ; if NTSC go set NTSC timing
+set_PAL_timing  ; else set PAL timing
+                LDA #$25        
+                STA $DC04       ; save CIA1 timer A low byte
+                LDA #$40        
+                JMP init_chipset_done
+set_NTSC_timing:       
+                LDA #$95        
+                STA $DC04       ; save CIA1 timer A low byte
+                LDA #$42
+init_chipset_done:        
+                STA $DC05       ; save CIA1 timer A high byte
+                JMP enable_CIA1_timer_A_IRQ
+
+;===========================================================
+; Enable CIA1 timer-A IRQ.
+enable_CIA1_timer_A_IRQ: ; Was $FF6E
+                LDA #$81        ; enable timer A interrupt
+                STA $DC0D       ; save VIA 1 ICR
+                LDA $DC0E       ; read VIA 1 CRA
+                AND #$80        ; mask x000 0000, TOD clock
+                ORA #$11        ; mask xxx1 xxx1, load timer A, start timer A
+                STA $DC0E       ; save VIA 1 CRA
+                JMP set_ser_clock_out_low ; set the serial clock out low and return
 
 ;===========================================================
 ; IRQ handler
