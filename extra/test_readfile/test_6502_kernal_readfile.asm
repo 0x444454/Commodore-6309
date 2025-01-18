@@ -16,7 +16,7 @@
 ; - Use 64TASS Assembler. Must use "-b" command line option if BUILD_REPLACEMENT_KERNAL=1 to produce the ".rom" Kernal file.
 ; - Insert a disk in the first drive (device 8) containing at least one file.
 ; - Load program or install Kernal and run (Kernal should run automatically at power-on).
-; - Program should load the first file ("*") found on disk starting from a specified address (default $0450).
+; - Program should load the first file ("*") found on disk starting from a specified address (default $8000 or $0450 for KERNAL replacement version).
 ; - While loading, you should see the loaded bytes appearing on screen, starting at line 10.
 ; - Wait until load completed or error.
 ; - After loading complete/error: See result code in upper-left corner of screen; loaded size in upper-right corner of screen.
