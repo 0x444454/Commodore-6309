@@ -1,5 +1,5 @@
 Test to read a file from 1541 (or compatible) disk drive.
-The first file ("*") will be loaded starting from $0450 (so you can see bytes being loaded on screen).
+The first file ("*") will be loaded starting from $8000 (PRG version) or $0450 (ROM version, so you can see bytes being loaded on screen).
 
 - **test_6502_kernal_readfile.asm**: Source code. Configure options before building.
 - **test_6502_kernal_readfile.prg**: Kernal-independent program (shuts off ROM and then load).
