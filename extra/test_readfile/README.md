@@ -1,6 +1,6 @@
 # WHAT IS THIS ?
 
-This is a test to read a file from a 1541 (or compatible) disk drive.
+This is a test to read a file from a 1541 (or cycle-exact compatible) disk drive.
 The first file on disk ("*") will be loaded starting from $8000 (PRG version) or $0450 (ROM version, so you can see bytes being loaded on screen).
 
 - **test_6502_kernal_readfile.asm**: Source code. Configure options before building.
