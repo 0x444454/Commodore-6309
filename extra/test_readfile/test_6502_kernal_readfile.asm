@@ -1,13 +1,14 @@
 ; This is a test 6502 Assembly program to load the first file found on disk, with and without C64 KERNAL mapped in mem.
 ; Purpose: Non-KERNAL code needs to be ported to 6309 for disk-based kickstarting of the Commodore-6309 prototype. Porting is done using a separate source file.
 ;
+; Project page:
+; https://github.com/0x444454/Commodore-6309 
+;
 ; Step 1: Make it work on 6510 as PRG using KERNAL. [DONE]
 ; Step 2: Make it work on 6510 as PRG not using KERNAL. [DONE]
 ; Step 3: Make it work on 6510 as a complete KERNAL replacement. [DONE]
 ;
 ; This can be built as a C64 replacement 6502 Kernal to test on an uninitialized machine (set BUILD_REPLACEMENT_KERNAL=1).
-; Project page:
-; https://github.com/0x444454/Commodore-6309 
 ;
 ; Kernal comments are based on Michael Steil's work: https://github.com/androdev4u/c64rom/blob/master/c64disasm
 ;
