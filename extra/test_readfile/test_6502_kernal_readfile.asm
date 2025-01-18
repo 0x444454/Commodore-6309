@@ -27,7 +27,7 @@
 ;   2025-01-17: Option to build as C64 replacement Kernal [DDT]
 
 USE_KERNAL               = 0   ; Set to 1 to use the standard C64 KERNAL routines. Set to 0 to test our extracted code in RAM (or in our replacement Kernal).
-BUILD_REPLACEMENT_KERNAL = 1   ; Set to 1 if this is going to run as a replacement Kernal (for debug purposes).
+BUILD_REPLACEMENT_KERNAL = 0   ; Set to 1 if this is going to run as a replacement Kernal (for debug purposes).
 
 .if USE_KERNAL && BUILD_REPLACEMENT_KERNAL
     .error "ERROR in config: Can't replace Kernal AND use stock Kernal."
@@ -225,7 +225,11 @@ little_delay:
             ;LDX #$02                ; Use file #2 for input
             ;JSR KERNAL_CHKIN        ; Set input to file
 
+.if BUILD_REPLACEMENT_KERNAL
 LOAD_ADDR = $0450
+.else
+LOAD_ADDR = $8000
+.endif
             ; Load file one byte at a time.
 ;            JSR KERNAL_OPEN         ; Open file.
 ;            BCS error_open          ; Error if carry set.
