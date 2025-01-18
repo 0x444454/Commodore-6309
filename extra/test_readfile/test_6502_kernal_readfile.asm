@@ -3,7 +3,7 @@
 ;
 ; Step 1: Make it work on 6510 as PRG using KERNAL. [DONE]
 ; Step 2: Make it work on 6510 as PRG not using KERNAL. [DONE]
-; Step 3: Make it work on 6510 as a complete KERNAL replacement. [NOT YET WORKING]
+; Step 3: Make it work on 6510 as a complete KERNAL replacement. [DONE]
 ;
 ; This can be built as a C64 replacement 6502 Kernal to test on an uninitialized machine (set BUILD_REPLACEMENT_KERNAL=1).
 ; Project page:
