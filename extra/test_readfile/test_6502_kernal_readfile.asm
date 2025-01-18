@@ -1,23 +1,37 @@
-; Test KERNAL binary file load, with and without Kernal mapped in mem.
-; This is the Kernal code that needs to be ported to 6309 for disk-based kickstarting.
+; This is a test 6502 Assembly program to load the first file found on disk, with and without C64 KERNAL mapped in mem.
+; Purpose: Non-KERNAL code needs to be ported to 6309 for disk-based kickstarting of the Commodore-6309 prototype. Porting is done using a separate source file.
+;
+; Step 1: Make it work on 6510 as PRG using KERNAL. [DONE]
+; Step 2: Make it work on 6510 as PRG not using KERNAL. [DONE]
+; Step 3: Make it work on 6510 as a complete KERNAL replacement. [NOT YET WORKING]
+;
+; This can be built as a C64 replacement 6502 Kernal to test on an uninitialized machine (set BUILD_REPLACEMENT_KERNAL=1).
 ; Project page:
 ; https://github.com/0x444454/Commodore-6309 
 ;
 ; Kernal comments are based on Michael Steil's work: https://github.com/androdev4u/c64rom/blob/master/c64disasm
 ;
 ; How to use:
-; - Define USE_KERNAL as required.
-; - Use 64TASS Assembler. Should work with other assemblers with minimal changes.
-; - Load program and run.
-; - Program will load the first file ("*") found on disk starting from address $8000.
-; - Wait until load completed or error (nothing will happen on screen).
-; - After loading complete/error: See result code in upper-right corner of screen; loaded size in upper-left corner of screen.
+; - Define USE_KERNAL and BUILD_REPLACEMENT_KERNAL as required.
+; - Use 64TASS Assembler. Must use "-b" command line option if BUILD_REPLACEMENT_KERNAL=1 to produce the ".rom" Kernal file.
+; - Insert a disk in the first drive (device 8) containing at least one file.
+; - Load program or install Kernal and run (Kernal should run automatically at power-on).
+; - Program should load the first file ("*") found on disk starting from a specified address (default $0450).
+; - While loading, you should see the loaded bytes appearing on screen, starting at line 10.
+; - Wait until load completed or error.
+; - After loading complete/error: See result code in upper-left corner of screen; loaded size in upper-right corner of screen.
 ;
 ; Revision history [authors in square brackets]:
 ;   2025-01-11: First version. [DDT]
 ;   2025-01-12: More complete (simulate power-on) init [DDT]
+;   2025-01-17: Option to build as C64 replacement Kernal [DDT]
 
-USE_KERNAL = 0 ; Set to 1 to use KERNAL routines. Set to 0 to test our extracted code in RAM.
+USE_KERNAL               = 0   ; Set to 1 to use the standard C64 KERNAL routines. Set to 0 to test our extracted code in RAM (or in our replacement Kernal).
+BUILD_REPLACEMENT_KERNAL = 1   ; Set to 1 if this is going to run as a replacement Kernal (for debug purposes).
+
+.if USE_KERNAL && BUILD_REPLACEMENT_KERNAL
+    .error "ERROR in config: Can't replace Kernal AND use stock Kernal."
+.endif
 
 .if USE_KERNAL
 KERNAL_SETLFS   = $FFBA
@@ -31,37 +45,129 @@ KERNAL_READST   = $FFB7
 KERNAL_LOAD     = $FFD5
 .endif
 
-  * = $0801
-  .word end_BASIC
-  .word 10
-  .byte $9e ; SYS
-  .text "2061", $00
-end_BASIC:
-  .word 0
 
+.if BUILD_REPLACEMENT_KERNAL
+    .warn "WARNING: Make sure to compile as raw binary, not PRG."
+            * = $E000
+.else
+            * = $0801
+    .word end_BASIC
+    .word 10
+    .byte $9e ; SYS
+    .text "2061", $00
+end_BASIC:
+    .word 0
+.endif
+
+    .cpu "6502"
 
 main:  
-            ; Make top line of characters white to highlight result.
-            LDX #40
-            LDA #1
-highlight:  STA $D800,X
-            DEX
-            BPL highlight
+            SEI         ; Disable interrupts.
+
+            ;LDA #$7F
+            ;STA $DC0D ; CIA1: Disable all interrupts.
+            ;LDA $DC0D ; CIA1: Ack pending interrupts.
+            ;STA $DD0D ; CIA2: Disable all interrupts.        
+            ;LDA $DD0D ; CIA2: Ack pending interrupts.
+            ;
+            ;; Init CIA2
+            ;LDA #$03
+            ;STA $DD00 ; Set default bank 0 for VIC-II
             
+            ; Init VIC-II
+            LDA #$1B
+            STA $D011 ; CR1
+            
+            LDA #210
+            STA $D012 ; Interrupt rasterline.
+            
+            LDA #$00
+            STA $D015 ; Sprite enable
+        
+            LDA #$C8
+            STA $D016 ; CR2
+            
+            LDA #$14
+            STA $D018 ; Mem ptrs
+        
+            LDA #$00
+            STA $D019 ; Interrupts register
+        
+            LDA #$00  ; Disable all.
+            STA $D01A ; Interrupts enabled (normal maskable IRQ).
+        
+            LDA #$02  ; Red
+            STA $D020 ; Border color
+        
+            LDA #$01  ; White
+            STA $D021 ; Background color 0
+            
+            ; Clear screen (and some more :-) with all black spaces.
+            LDX #$00
+            LDA #$20      ; Space
+loop_cls:
+            STA $0400, X
+            STA $0500, X
+            STA $0600, X
+            STA $0700, X
+            STA $D800, X
+            STA $D900, X
+            STA $DA00, X
+            STA $DB00, X
+            INX
+            BNE loop_cls ; Print till zero term or max 256 chars.
+
+;            ; Make top line of characters white to highlight result.
+;            LDX #40
+;            LDA #1
+;highlight:  STA $D800,X
+;            DEX
+;            BPL highlight
+
+
+            ; Print "LO" for loading message.
+            .enc "screen"
+            LDA #'l'
+            STA $400
+            LDA #'o'
+            STA $401  
+            .enc "none"
+
+            CLI ; Enable interrupts.
             
 .if !USE_KERNAL
             ; Be sure we are totally independent from KERNAL.
             ; For proper no-kernal load test, we disable all ROMs and only leave RAM + I/O space.
             SEI                     ; Disable interrupts for this critical section.
-            LDA $01                 ; Get processor port value.
-            AND #$F8                ; Don't mess with tape stuff (we don't support tape).
-            ORA #$05                ; We only want RAM and I/O mapped. Kiss ROMs goodbye.
+
+.if BUILD_REPLACEMENT_KERNAL
+            LDX #$FB                ; Set stack pointer.
+            TXS
+
+            LDA #$36                ; We only want RAM, I/O mapped, and this KERNAL. Kiss BASIC ROMs goodbye.
+.else            
+            LDA #$35                ; We only want RAM and I/O mapped. Kiss BASIC and KERNAL ROMs goodbye.
+.endif            
             STA $01                 ; Set processor port.
-            ; LOAD seems to need IRQ for timings, so we setup the 6502 IRQ vector in RAM @ $FFFE (remember: ROM is gone).
+
+            LDA #$2F                ; set 0010 1111, 0 = input, 1 = output            
+            STA $00                 ; save the 6510 I/O port direction register
+
+.if !BUILD_REPLACEMENT_KERNAL
+            ; KERNAL ROM is gone, so set IRQ and NMI vectors.
+            ;
+            ; LOAD seems to need IRQ for timings, so we setup the 6502 IRQ vector in RAM @ $FFFE.
             LDA #<irq_handler
             STA $FFFE
             LDA #>irq_handler
             STA $FFFF
+            ; Set NMI vector in RAM @ $FFFA (should not be needed, but just in case).
+            LDA #<nmi_handler
+            STA $FFFA
+            LDA #>nmi_handler
+            STA $FFFB
+.endif
+
             ; Now clear system variables currently in use, as our custom ROM will start from scratch.
             LDA #$00
             TAX
@@ -79,6 +185,22 @@ skip_pport: STA $0100,X
             JSR init_serial         ; Init CIA2 for serial communications.
             CLI                     ; Re-enable interrupts after this critical section.
 .endif
+            
+            ; Little delay before starting, or things won't work.
+            ; NOTE: Took one entire debugging day to understand this :-(
+            LDX #$10
+little_delax:
+            LDY #$FF
+little_delay:
+            JSR delay_1ms
+            DEY
+            BNE little_delay
+            DEX
+            BNE little_delax
+            
+            ; Reset serial bus.
+            JSR send_cmd_UNLISTEN
+            JSR send_cmd_UNTALK
             
             ; Prepare for load.
             
@@ -103,7 +225,7 @@ skip_pport: STA $0100,X
             ;LDX #$02                ; Use file #2 for input
             ;JSR KERNAL_CHKIN        ; Set input to file
 
-LOAD_ADDR = $8000
+LOAD_ADDR = $0450
             ; Load file one byte at a time.
 ;            JSR KERNAL_OPEN         ; Open file.
 ;            BCS error_open          ; Error if carry set.
@@ -171,7 +293,7 @@ error_open:
             .enc "screen"
             LDA #'e'
             STA $400
-            LDA #'r'
+            LDA #'o'
             STA $401
             .enc "none"
             RTS
@@ -233,6 +355,45 @@ filename_end:
 
 
 ;===========================================================
+; Print A as a hex number on the upper-right corner of the screen.
+; NOTE: Registers are preserved.
+
+print_A_hex:
+                PHA         ; Save A.
+                PHA         ; Save A.
+                
+                LSR
+                LSR
+                LSR
+                LSR
+                CMP #$0A
+                BCS pA_alpha_0
+                ; Not alpha, i.e. [0..9]
+                ADC #$30 + 9
+pA_alpha_0:    
+                SEC
+                SBC #9
+                STA $426    ; Print high nibble.
+
+nxt_nibble:
+                PLA         ; Restore A.
+                AND #$0F
+                CMP #$0A
+                BCS pA_alpha_1
+                ; Not alpha, i.e. [0..9]
+                ADC #$30 + 9
+pA_alpha_1:    
+                SEC
+                SBC #9
+                STA $427    ; Print lo nibble.
+
+end_pAh:    
+                PLA         ; Restore A.
+                RTS       
+
+
+
+;===========================================================
 ; Raw SETNAM routine, same as Kernal SETNAM call.
 raw_SETNAM:
                 STA $B7         ; set file name length
@@ -249,26 +410,11 @@ raw_SETLFS:
                 STY $B9         ; save the secondary address
                 RTS  
                 
-
-;===========================================================
-; Initialize serial port.
-init_serial:
-                LDA #$7F        ; disable all interrupts
-                STA $DD0D       ; save CIA2 ICR
-                LDA #$06        ; set serial DTR output, serial RTS output
-                STA $DD03       ; save CIA2 DDRB, serial port
-                STA $DD01       ; save CIA2 DRB, serial port
-                LDA #$04        ; mask xxxx x1xx, set serial Tx DATA high
-                ORA $DD00       ; OR it with CIA2 DRA, serial port and video address
-                STA $DD00       ; save CIA2 DRA, serial port and video address
-                LDY #$00        ; clear Y
-                STY $02A1       ; clear the serial interrupt enable byte
-                RTS
-                
 ;===========================================================
 ; Raw LOAD routine, same as Kernal LOAD call.
 
 raw_LOAD: ; Was $F49E
+
                 STX $C3                 ; set kernal setup pointer low byte
                 STY $C4                 ; set kernal setup pointer high byte
                 ;JMP ($0330)            ; do LOAD vector, usually points to $F4A5
@@ -332,15 +478,15 @@ get_serial_byte:
                 TXA                     ; copy received byte back
                 LDY $93                 ; get load/verify flag
                 BEQ do_load             ; if load go load
-                                        ; else is verify
-                LDY #$00                ; clear index
-                CMP ($AE),Y             ; compare byte with previously loaded byte
-                BEQ inc_save_ptr_L      ; if match go ??
-                LDA #$10                ; flag read error
-                JSR or_into_serial_status_byte ; OR into the serial status byte
-                JMP inc_save_ptr_L
+                                        ; else is verify [UNSUPPORTED, do LOAD anyway]
+                ;LDY #$00                ; clear index
+                ;CMP ($AE),Y             ; compare byte with previously loaded byte
+                ;BEQ inc_save_ptr_L      ; if match go ??
+                ;LDA #$10                ; flag read error
+                ;JSR or_into_serial_status_byte ; OR into the serial status byte
+                ;JMP inc_save_ptr_L
 do_load:
-                STA ($AE),Y             ; save byte to memory
+                STA ($AE),Y             ; save byte to memory (note that Y is always 0 here).
 inc_save_ptr_L:
                 INC $AE                 ; increment save pointer low byte
                 BNE after_inc_save_ptr_H ; if no rollover skip high byte inc
@@ -355,8 +501,8 @@ after_inc_save_ptr_H:
 file_not_found:
                 JMP error_file_not_found ; do file not found error and return
 
-tape_load:                  ; Was $F533 (*** ??)
-                 JMP error_file_not_found ; TAPE LOAD UNIMPLEMENTED.
+tape_load:                  ; Was $F533
+                 JMP error_file_not_found ; [DDT] TAPE LOAD UNIMPLEMENTED.
 ;                LSR             
 ;                BCS u_ok0       
 ;                JMP $F713       ; else do 'illegal device number' and return
@@ -440,11 +586,13 @@ send_sec_addr_and_filename: ; Was $F3D5
                 LDA $B9             ; get the secondary address
                 BMI exit_F3D3       ; ok exit if -ve
                 LDY $B7             ; get file name length
-                BEQ exit_F3D3       ; ok exit if null
+                BEQ exit_F3D3       ; ok exit if null name
+                
                 LDA #$00            ; clear A
                 STA $90             ; clear the serial status byte
                 LDA $BA             ; get the device number
                 JSR command_serial_bus_to_listen ; command devices on the serial bus to LISTEN
+
                 LDA $B9             ; get the secondary address
                 ORA #$F0            ; OR with the OPEN command
                 JSR send_sec_addr_after_LISTEN ; send secondary address after LISTEN
@@ -456,6 +604,7 @@ send_sec_addr_and_filename: ; Was $F3D5
 device_present: 
                 LDA $B7             ; get file name length
                 BEQ do_unlisten     ; branch if null name
+                
                 LDY #$00            ; clear index
 nxt_fn_byte:
                 LDA ($BB),Y         ; get file name byte
@@ -574,6 +723,7 @@ tx_byte: ; Was $ED40
                 BPL no_EOI      ; if not EOI go ??
                                 ; I think this is the EOI sequence so the serial clock has been released and the serial
                                 ; data is being held low by the peripheral. first up wait for the serial data to rise
+
 wait_data_status_hi0:
                 JSR get_ser_data_status_in_C ; get the serial data status in Cb
                 BCC wait_data_status_hi0 ; loop if the data is low
@@ -587,7 +737,10 @@ wait_data_status_lo0:
                                 ; data line to go high again or, if this isn't an EOI sequence, just wait for the serial
                                 ; data to go high the first time
 no_EOI:
+
 wait_data_status_hi1:
+   INC $d020   
+
                 JSR get_ser_data_status_in_C ; get the serial data status in Cb
                 BCC wait_data_status_hi1 ; loop if the data is low
                                 ; serial data is high now pull the clock low, preferably within 60us
@@ -641,7 +794,8 @@ wait_ser_data_lo:
                 ; ERROR: Device not present
 dev_not_present: ; Was $EDAD          
                 LDA #$80        ; error $80, device not present
-;.:EDAF 2C       .BYTE $2C      ; [original Kernal] makes next line BIT $03A9
+                ;.BYTE $2C       ;makes next line BIT $03A9
+                                ; timeout on serial bus
                 JMP label_EDB2  ; [readable Kernal]
 ser_bus_timeout:
                 LDA #$03        ; error $03, read timeout, write timeout
@@ -650,7 +804,7 @@ label_EDB2:
                 CLI             ; enable the interrupts
                 CLC             ; clear for branch
                 BCC label_EE03  ; ATN high, delay, clock high then data high, *** branch always ***
-                ;JMP send_sec_addr_after_LISTEN ; TODO: Is this needed.
+                ; ^^^ This is a BRA.
 
 ;===========================================================
 ; Send secondary address after LISTEN
@@ -688,15 +842,17 @@ set_serial_ATN_high: ; Was $EDBE
 ; Send a byte to the serial bus
 send_serial_byte: ; Was $EDDD
                 BIT $94         ; test the deferred character flag
-                BMI label_EDE6  ; if there is a deferred character go send it
+                BMI send_deferred ; if there is a deferred character go send it
+                
+                ; Defer this byte.
                 SEC             ; set carry
                 ROR $94         ; shift into the deferred character flag
-                BNE label_EDEB  ; save the byte and exit, branch always
-label_EDE6:
+                BNE defer_byte  ; save the byte and exit, branch always
+send_deferred:
                 PHA             ; save the byte
                 JSR tx_byte     ; Tx byte on serial bus
                 PLA             ; restore the byte
-label_EDEB:
+defer_byte:
                 STA $95         ; save the defered Tx byte
                 CLC             ; flag ok
                 RTS
@@ -723,14 +879,15 @@ call_send_ctrl_char:
 label_EE03:
                 JSR set_serial_ATN_high ; set serial ATN high
                                 
-                ; 1ms delay, clock high then data high
-do_1ms_delay_ch_dh:
-                TXA             ; save the device number
-                LDX #$0A        ; short delay
-label_EE09:
-                DEX             ; decrement the count
-                BNE label_EE09  ; loop if not all done
-                TAX             ; restore the device number
+                ; Delay, clock high then data high
+do_delay_ch_dh:
+                ; Short delay [55 cycles]
+                TXA             ; [2 cycles] save the device number
+                LDX #$0A        ; [2 cycles] Repeat 10 times.
+unlisten_delay: DEX             ; [2 cycles] decrement the count
+                BNE unlisten_delay ; [3 cycles if taken, else 2]
+                TAX             ; [2 cycles] restore the device number
+
                 JSR set_ser_clock_out_high ; set the serial clock out high
                 JMP set_ser_data_out_high ; set the serial data out high and return
 
@@ -793,7 +950,7 @@ label_EE67:
                 JSR set_ser_data_out_low ; set the serial data out low
                 BIT $90         ; test the serial status byte
                 BVC label_EE80  ; if EOI not set skip the bus end sequence
-                JSR do_1ms_delay_ch_dh ; 1ms delay, clock high then data high
+                JSR do_delay_ch_dh ; Enforce a delay, clock high then data high
 label_EE80:
                 LDA $A4         ; get the receive byte
                 CLI             ; enable the interrupts
@@ -843,15 +1000,15 @@ get_ser_data_status_in_C: ; Was $EEA9
                 RTS   
 
 ;===========================================================
-; Delay 1ms
+; Delay 1ms (actually, 931 cycles).
 delay_1ms: ; Was $EEB3
-                TXA             ; save X
-                LDX #$B8        ; set the loop count
+                TXA             ; [2 cycles] save X
+                LDX #$B8        ; [2 cycles] Repeat loop 184 times.
 d1ms_loop:
-                DEX             ; decrement the loop count
-                BNE d1ms_loop   ; loop if more to do
-                TAX             ; restore X
-                RTS  
+                DEX             ; [2 cycles] decrement the loop count
+                BNE d1ms_loop   ; [3 cycles if taken, else 2] loop if more to do
+                TAX             ; [2 cycles] restore X
+                RTS             ; [6 cycles]
 
 ;===========================================================
 ; Check RS232 bus idle
@@ -911,7 +1068,7 @@ label_F6BC:
                 LDA $DC01       ; read CIA1 DRB, keyboard row port
                 CMP $DC01       ; compare it with itself
                 BNE label_F6BC  ; loop if changing
-                TAX             
+                TAX
                 BMI label_F6DA       
                 LDX #$BD        ; set c6
                 STX $DC00       ; save CIA1 DRA, keyboard column drive
@@ -994,16 +1151,32 @@ init_chipset_done:
 ; Enable CIA1 timer-A IRQ.
 enable_CIA1_timer_A_IRQ: ; Was $FF6E
                 LDA #$81        ; enable timer A interrupt
-                STA $DC0D       ; save VIA 1 ICR
-                LDA $DC0E       ; read VIA 1 CRA
+                STA $DC0D       ; save CIA1 ICR
+                LDA $DC0E       ; read CIA1 CRA
                 AND #$80        ; mask x000 0000, TOD clock
                 ORA #$11        ; mask xxx1 xxx1, load timer A, start timer A
-                STA $DC0E       ; save VIA 1 CRA
+                STA $DC0E       ; save CIA1 CRA
                 JMP set_ser_clock_out_low ; set the serial clock out low and return
+
+;===========================================================
+; Initialize serial port.
+init_serial:
+                LDA #$7F        ; disable all interrupts
+                STA $DD0D       ; save CIA2 ICR
+                LDA #$06        ; set serial DTR output, serial RTS output
+                STA $DD03       ; save CIA2 DDRB, serial port
+                STA $DD01       ; save CIA2 DRB, serial port
+                LDA #$04        ; mask xxxx x1xx, set serial Tx DATA high
+                ORA $DD00       ; OR it with CIA2 DRA, serial port and video address
+                STA $DD00       ; save CIA2 DRA, serial port and video address
+                LDA #$00        ; clear Y
+                STA $02A1       ; clear the serial interrupt enable byte
+                RTS
 
 ;===========================================================
 ; IRQ handler
 irq_handler: ; Was $FF48
+                ;INC $0428
                 ; Save registers.
                 PHA             ; save A
                 TXA             ; copy X
@@ -1083,51 +1256,24 @@ end_IRQ_handler:
                 PLA             ; restore A
                 RTI             ; Return from IRQ.
 
-
          
+   
 ;===========================================================
-; Print A as a hex number on the upper-right corner of the screen.
-; NOTE: Registers are preserved.
+; NMI handler
+nmi_handler: ; Was $FE43
+                ; Not needed for disk operations.
+                RTI
+  
 
-print_A_hex:
-        PHA        ; Save A.
-        PHA        ; Save A.
+;===========================================================
+
+.if BUILD_REPLACEMENT_KERNAL
+        * = $FFFA ; 6502: NMI vector
+        .word nmi_handler 
         
-        LSR
-        LSR
-        LSR
-        LSR
-        CMP #$0A
-        BCS pA_alpha_0
-        ; Not alpha, i.e. [0..9]
-        ADC #$30 + 9
-pA_alpha_0:    
-        SEC
-        SBC #9
-        STA nibble_char_h
-
-nxt_nibble:
-        PLA        ; Restore A.
-        AND #$0F
-        CMP #$0A
-        BCS pA_alpha_1
-        ; Not alpha, i.e. [0..9]
-        ADC #$30 + 9
-pA_alpha_1:    
-        SEC
-        SBC #9
-        STA nibble_char_l
+        * = $FFFC ; 6502: RESET vector
+        .word $E000 
         
-        ; Output.
-        LDA nibble_char_h
-        STA $426
-        LDA nibble_char_l
-        STA $427
-
-end_pAh:    
-        PLA        ; Restore A.
-        RTS
-
-nibble_char_h: .byte 0
-nibble_char_l: .byte 0            
-
+        * = $FFFE ; 6502: IRQ/BRK vector
+        .word irq_handler 
+.endif
