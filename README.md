@@ -33,7 +33,9 @@ _"Alive! It's alive! It's alive!"_
 
 Prototype works with preliminary test Kernal ROM, running test code like a fixed-point Mandelbrot set generator.  
 IRQ is working. FIRQ is also functional, but the C64 only has one IRQ signal, so we opted to support IRQ and disabled FIRQ.  
-VIC-II raster interrupts are working.
+VIC-II raster interrupts are working.  
+File loading from floppy drive is working (beta). Use a real 1541 drive or a 100% compatible modern device like the Pi1541. Next step is support for OS bootstrap (e.g. NitrOS-9 loader).
+
 
 There are problems after enabling sprites. Even one single sprite will cause the system to crash.  
 This might be due to prototype wiring using a breadboard (signal timings and power issues).  
@@ -106,7 +108,6 @@ Note the random missing characters pixel lines, due to timing issues that have b
 # NEXT STEPS
 
 - Design prototype PCB daughterboard the plugs into the 6510 socket. This will improve timing precision and make prototyping more comfortable.
-- Add floppy drive support to kick NitrOS-9 loader, or run a generic 6309 program from RAM.
-- Inplement a minimalistic CPU monitor in ROM.
+- Implement a minimalistic CPU monitor in ROM.
 - Improve the prototype and design a final version using the Expansion Port.
 
