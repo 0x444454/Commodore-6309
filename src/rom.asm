@@ -630,6 +630,7 @@ sprite_def:
 ; ==================== BOOSTRAP ROUTINES: BEGIN ====================
 ; ===================================================================
 ; NOTE: These are ported to 6309 from the C64 KERNAL (6502).
+; Kernal comments are based on Michael Steil's work: https://github.com/androdev4u/c64rom/blob/master/c64disasm
 ;
 ; Calling convention translation table for Kernal input/output registers:
 ;       +-------------+
