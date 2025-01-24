@@ -1,10 +1,13 @@
 ; 6510 code for the Commodore-6309 ROM.
 ; https://github.com/0x444454/Commodore-6309
+;
+; Use 64TASS Assembler.
+l
 ; Revision history [authors in square brackets]:
 ;   2024-09-24: First simple test loop. [DDT]
 ;   2025-01-03: Use joy-2 input for more flexible tests.
 
-BUILD_ROM = 1
+BUILD_ROM = 0
 
 .if BUILD_ROM
         * = $F0F8   ; Use to build ROM for 6309 Kernal in 6510 mode.
@@ -149,6 +152,44 @@ wait_no_joy:
         RTS
 
 
+;===========================================================
+; Print A as a hex number on the upper-right corner of the screen.
+; NOTE: Registers are preserved.
+
+print_A_hex:
+        PHA         ; Save A.
+        PHA         ; Save A.
+        
+        LSR
+        LSR
+        LSR
+        LSR
+        CMP #$0A
+        BCS pA_alpha_0
+        ; Not alpha, i.e. [0..9]
+        ADC #$30 + 9
+pA_alpha_0:    
+        SEC
+        SBC #9
+        STA $426    ; Print high nibble.
+
+nxt_nibble:
+        PLA         ; Restore A.
+        AND #$0F
+        CMP #$0A
+        BCS pA_alpha_1
+        ; Not alpha, i.e. [0..9]
+        ADC #$30 + 9
+pA_alpha_1:    
+        SEC
+        SBC #9
+        STA $427    ; Print lo nibble.
+
+end_pAh:    
+        PLA         ; Restore A.
+        RTS
+
+
 ; ==================== IRQ routine ====================
 ; NOTE: The 6502 does not save A,X,Y when calling the IRQ service routine.
 
@@ -157,6 +198,14 @@ irq_6502:
         PHA
         TXA
         PHA
+
+        INC $D020
+        LDA $D019
+        ;JSR print_A_hex
+        AND #$01            ; Check for raster interrupt.
+        BEQ no_raster
+        
+        ; Handle raster interrupts.
 
         LDA #$7
         STA $D020
@@ -170,9 +219,13 @@ irq_delay:
         LDA #$0
         STA $D020
 
-        LDA #$01
-        ORA $D019       ; Acknowledge raster interrupt.
+        LDA #$01            ; Acknowledge raster interrupt.
+        ;ORA $D019
         STA $D019
+
+no_raster:
+        ; Handle other interrupts.
+        
         
         ; Retreive used registers.
         PLA
