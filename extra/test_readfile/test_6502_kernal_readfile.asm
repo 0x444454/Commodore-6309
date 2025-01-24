@@ -24,8 +24,9 @@
 ;
 ; Revision history [authors in square brackets]:
 ;   2025-01-11: First version. [DDT]
-;   2025-01-12: More complete (simulate power-on) init [DDT]
-;   2025-01-17: Option to build as C64 replacement Kernal [DDT]
+;   2025-01-12: More complete (simulate power-on) init. [DDT]
+;   2025-01-17: Option to build as C64 replacement Kernal. [DDT]
+;   2025-01-21: Added raster interrupt to test interrupt disruption while loading. Border is red on error. [DDT]
 
 USE_KERNAL               = 0   ; Set to 1 to use the standard C64 KERNAL routines. Set to 0 to test our extracted code in RAM (or in our replacement Kernal).
 BUILD_REPLACEMENT_KERNAL = 0   ; Set to 1 if this is going to run as a replacement Kernal (for debug purposes). Set to 0 for PRG file.
@@ -80,7 +81,7 @@ main:
             STA $D011 ; CR1
             
             LDA #210
-            STA $D012 ; Interrupt rasterline.
+            STA $D012 ; Interrupt rasterline (used to test interrupts disruption).
             
             LDA #$00
             STA $D015 ; Sprite enable
@@ -91,12 +92,12 @@ main:
             LDA #$14
             STA $D018 ; Mem ptrs
         
-            LDA #$00
-            STA $D019 ; Interrupts register
-        
-            LDA #$00  ; Disable all.
-            STA $D01A ; Interrupts enabled (normal maskable IRQ).
-        
+            LDA #$00  ; Disable all VIC-II interrupts.
+            STA $D01A ; Interrupts enable register (normal maskable IRQ).
+            
+            LDA #$FF
+            STA $D019 ; Acknowledge all pending VIC-II interrupts.
+
             LDA #$02  ; Red
             STA $D020 ; Border color
         
@@ -118,12 +119,12 @@ loop_cls:
             INX
             BNE loop_cls ; Print till zero term or max 256 chars.
 
-;            ; Make top line of characters white to highlight result.
-;            LDX #40
-;            LDA #1
-;highlight:  STA $D800,X
-;            DEX
-;            BPL highlight
+            ; Make top line of characters blue to highlight result.
+            LDX #40
+            LDA #6
+highlight:  STA $D800,X
+            DEX
+            BPL highlight
 
 
             ; Print "LO" for loading message.
@@ -136,6 +137,7 @@ loop_cls:
 
             CLI ; Enable interrupts.
             
+
 .if !USE_KERNAL
             ; Be sure we are totally independent from KERNAL.
             ; For proper no-kernal load test, we disable all ROMs and only leave RAM + I/O space.
@@ -182,11 +184,22 @@ skip_pport: STA $0100,X
             INX
             BNE cl_sysvars
             
-            JSR init_chipset        ; Init chipset.
-            JSR init_serial         ; Init CIA2 for serial communications.
+            JSR k_init_chipset        ; Init chipset.
+            JSR k_init_serial         ; Init CIA2 for serial communications.
             CLI                     ; Re-enable interrupts after this critical section.
 .endif
             
+
+            ; Init debug stuff.
+            ;
+            ; Default debug-print address: $0410
+            LDA #$00
+            STA DBG_PRINT_ADDR
+            LDA #$04
+            STA DBG_PRINT_ADDR+1
+            
+            JSR debug_print_CIA2
+
             ; Little delay before starting, or things won't work.
             ; NOTE: Took one entire debugging day to understand this :-(
             LDX #$10
@@ -202,6 +215,14 @@ little_delay:
             ; Reset serial bus.
             JSR send_cmd_UNLISTEN
             JSR send_cmd_UNTALK
+            
+            JSR debug_print_CIA2
+            
+            ; Enable raster interrupt (not needed, just for testing).
+            LDA #$01            ; Enable VIC-II raster interrupt.
+            STA $D01A
+            
+            
             
             ; Prepare for load.
             
@@ -301,7 +322,7 @@ error_open:
             LDA #'o'
             STA $401
             .enc "none"
-            RTS
+            JMP end_error
 
             ; ERROR: Read.
 error_read: 
@@ -312,7 +333,7 @@ error_read:
             LDA #'r'
             STA $401
             .enc "none"
-            RTS
+            JMP end_error
 
 error_illegal_device_num:
             JSR print_A_hex
@@ -322,7 +343,7 @@ error_illegal_device_num:
             LDA #'n'
             STA $401
             .enc "none"
-            RTS
+            JMP end_error
 
 error_missing_file_name:
             JSR print_A_hex
@@ -332,7 +353,7 @@ error_missing_file_name:
             LDA #'f'
             STA $401
             .enc "none"
-            RTS
+            JMP end_error
 
 error_device_not_present:
             JSR print_A_hex
@@ -342,7 +363,7 @@ error_device_not_present:
             LDA #'p'
             STA $401
             .enc "none"
-            RTS
+            JMP end_error
 
 error_file_not_found:
             JSR print_A_hex
@@ -352,6 +373,11 @@ error_file_not_found:
             LDA #'u'
             STA $401
             .enc "none"
+            JMP end_error
+
+end_error:  ; Set border color to red.
+            LDA #2
+            STA $D020
             RTS
 
 filename:   ;.text 'KICK'
@@ -397,6 +423,56 @@ end_pAh:
                 RTS       
 
 
+;===========================================================
+; Debug print bits in register A at the screen address specified in DBG_PRINT_ADDR [LO][HI].
+; NOTE: Registers are preserved.
+
+DBG_PRINT_ADDR = $BE ; Also $BF for high byte, and $C0 to save A.
+
+debug_print_bits:
+                STA DBG_PRINT_ADDR + 2
+                TYA
+                PHA
+                LDA DBG_PRINT_ADDR + 2
+
+                LDY #0
+pr_nxt_bit:     ASL             ; Carry = bit to print.
+                PHA             ; Save A.
+                LDA #$30        ; A = '0'
+                ADC #0          ; A = '0' + carry.
+                STA ($BE),Y
+                PLA             ; Restore A.
+                INY
+                CPY #8
+                BNE pr_nxt_bit
+                
+                PLA
+                TAY
+                LDA DBG_PRINT_ADDR + 2
+                RTS
+
+;===========================================================
+; Debug print CIA2 stuff.
+; NOTE: Registers are preserved.
+
+debug_print_CIA2:   
+                PHA
+                
+                ; Print CIA2:PA
+                LDA #$06
+                STA DBG_PRINT_ADDR
+                LDA $DD00
+                JSR debug_print_bits
+                
+                ; Print CIA2:DDRA
+                LDA #$10
+                STA DBG_PRINT_ADDR
+                LDA $DD02
+                JSR debug_print_bits
+                
+                PLA
+                RTS
+
 
 ;===========================================================
 ; Raw SETNAM routine, same as Kernal SETNAM call.
@@ -441,10 +517,10 @@ no_keyb:
                 BNE ok_filename         ; if not null name, skip error
                 JMP error_missing_file_name ; else do 'missing file name' error and return
 ok_filename:
-                LDX $B9                 ; get the secondary address
+                LDX $B9                 ; save the secondary address in X
                 ;JSR $F5AF              ; print "Searching..."
                 LDA #$60        
-                STA $B9                 ; save the secondary address
+                STA $B9                 ; overwrite the secondary address
                 JSR send_sec_addr_and_filename ; send secondary address and filename
                 LDA $BA                 ; get the device number
                 JSR command_serial_bus_to_talk ; command serial bus device to TALK
@@ -458,8 +534,9 @@ ok_filename:
                 BCS file_not_found      ; if timed out go do file not found error and return
                 JSR recv_serial_byte    ; input byte from serial bus
                 STA $AF                 ; save program start address high byte
-                TXA                     ; copy secondary address
+                TXA                     ; restore secondary address
                 BNE no_load_location    ; load location not set in LOAD call, so continue with the load
+                ; Use location in load command instead.
                 LDA $C3                 ; get the load address low byte
                 STA $AE                 ; save the program start address low byte
                 LDA $C4                 ; get the load address high byte
@@ -482,7 +559,7 @@ get_serial_byte:
                 BCS try_get_serial_byte ; if timed out go try again
                 TXA                     ; copy received byte back
                 LDY $93                 ; get load/verify flag
-                BEQ do_load             ; if load go load
+                ;BEQ do_load             ; if load go load
                                         ; else is verify [UNSUPPORTED, do LOAD anyway]
                 ;LDY #$00                ; clear index
                 ;CMP ($AE),Y             ; compare byte with previously loaded byte
@@ -941,6 +1018,7 @@ label_EE5A:
                 LDA $DD00       ; read CIA2 DRA, serial port and video address
                 CMP $DD00       ; compare it with itself
                 BNE label_EE5A  ; if changing go try again
+               
                 ASL             ; shift the serial data into the carry
                 BPL label_EE5A  ; loop while the serial clock is low
                 ROR $A4         ; shift the data bit into the receive byte
@@ -1091,7 +1169,7 @@ label_F6DC:
      
 ;===========================================================
 ; Init SID, CIA and timer IRQ.
-init_chipset:
+k_init_chipset:
                 JSR init_VIC_and_screen
                 JSR init_SID_CIA_and_timer_IRQ
                 RTS
@@ -1165,7 +1243,7 @@ enable_CIA1_timer_A_IRQ: ; Was $FF6E
 
 ;===========================================================
 ; Initialize serial port.
-init_serial:
+k_init_serial:
                 LDA #$7F        ; disable all interrupts
                 STA $DD0D       ; save CIA2 ICR
                 LDA #$06        ; set serial DTR output, serial RTS output
@@ -1181,7 +1259,7 @@ init_serial:
 ;===========================================================
 ; IRQ handler
 irq_handler: ; Was $FF48
-                ;INC $0428
+                INC $0404
                 ; Save registers.
                 PHA             ; save A
                 TXA             ; copy X
@@ -1201,6 +1279,30 @@ stall_on_BRK:   JMP stall_on_BRK ; TODO: [delete this line] This is for debuggin
                 JMP end_IRQ_handler
                 
 not_BRK:
+                ; Check if this is a raster interrupt.
+                LDA $D019
+                ;JSR print_A_hex
+                AND #$01            
+                BEQ no_raster_irq
+
+                ; Handle raster interrupt.
+                LDY $D020       ; Save border color.
+                ; Change border color for yellow bar.
+                LDA #7
+                STA $D020            
+                ; Wait a bit (a few cycles) for color bar to be visible.
+                LDX #$10             
+irq_raster_delay:
+                DEX
+                BNE irq_raster_delay
+                ; Restore border color.
+                STY $D020
+no_raster_irq:
+                ; Acknowledge any VIC-II interrupt.
+                LDA #$FF
+                STA $D019                
+
+
                 ; Handle system IRQ.
 irq_system:      ; Was $EA31
                 JSR inc_realtime_clock ; increment the real time clock
