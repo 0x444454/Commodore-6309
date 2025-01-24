@@ -39,7 +39,7 @@ File loading from floppy drive is working (beta). Use a real 1541 drive or a 100
 
 There are problems after enabling sprites. Even one single sprite will cause the system to crash.  
 This might be due to prototype wiring using a breadboard (signal timings and power issues).  
-Problem is being investigated. Screenshot of the problem here: [Sprites Problem](media/20250104-Sprites_DMA_conflict.jpg)
+Problem is being investigated.
 
 # INGREDIENTS
 
