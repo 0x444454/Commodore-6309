@@ -1,4 +1,4 @@
-; Commodore-6309 test ROM
+; Commodore-6309 Kernal ROM
 ; https://github.com/0x444454/Commodore-6309 
 ;
 ; Revision history [authors in square brackets]:
@@ -10,6 +10,7 @@
 ;   2025-01-17: Debugged disk file loading routines. [DDT]
 ;   2025-01-12: Added utility routines. [DDT]
 ;   2025-01-23: Finalized disk file loading routines and tested working on Pi1541. Press Joy-2 LEFT to LOAD "*". [DDT]
+;   2025-01-27: Added check for autostart ROM at $8000 (i.e. cartridge). [DDT]
         
             PRAGMA 6309
             OPT CD
@@ -20,12 +21,18 @@ init:
 
 ; Switch from 6809 emulation mode (default) to 6309 native mode.
         
-            LDMD #$01  ; This also sets the FIRQ handling mode (bit 1) to 0 (i.e. save only PC and CC). Note that the current hardware prototype only uses IRQ.
+            LDMD #$01       ; This also sets the FIRQ handling mode (bit 1) to 0 (i.e. save only PC and CC). Note that the current hardware prototype only uses IRQ.
  
 ; Setup the stack pointers
-            LDS #$7FFF ; System Stack. We use this one.
-            LDU #$77FF ; User Stack.
+            LDS #$7FFF      ; System Stack. We use this one.
+            LDU #$77FF      ; User Stack.
 
+            ; Check if we have an autostart ROM at $8000 (i.e. cartridge port).
+            JSR scan_autostart_ROM
+            BNE no_autostart_ROM
+            JMP ($8000)     ; Austostart ROM found. Jump at start address.
+no_autostart_ROM:
+            
  
 ; Init CIAs   --------------------
 
@@ -161,8 +168,14 @@ read_joy:
             BITA #$01           ; Check if UP.
             BNE no_U            ; UP not pressed.
             ; UP
-            JSR Sprites_test    ; UP action: Perform sprite test (sprites will stay enabled after test).
-            BRA end_input
+            ; Sprite test. Clear screen with spaces first.
+            LDA #$20
+            JSR fill_screen
+            JSR Sprites_test    ; UP action: Enable next sprite (sprites will stay enabled after test).
+wait_U_rel: LDA $DC00           ; Wait until UP released.
+            BITA #$01           ; Check if UP.
+            BEQ wait_U_rel      ; UP still pressed.
+            BRA main_loop
 no_U:       BITA #$02           ; Check if DOWN.
             BNE no_D            ; DOWN not pressed.
             ; DOWN
@@ -531,42 +544,27 @@ Sprites_test:
         ; }
         
         ; Copy without TFM {
-        LDB #0
+        LDB #63
 cpyspr: LDA ,X+
         STA ,Y+
-        INCB
-        CMPB #63
+        DECB
         BNE cpyspr
         ; }
         
         
         ; Set sprite pointers.
-        ;LDQ #$C0C0C0C0
-        ;STQ $7F8
-        ;STQ $7FC
-        
-        LDB #0
-        LDA #$C0
-        LDY #$07F8
-setsp:  STA ,Y+
-        INCB
-        CMPB #8
-        BNE setsp
-        
+        LDQ #$C0C0C0C0
+        STQ $7F8
+        STQ $7FC
+       
         
         ; Set sprite colors (2 to 9).
-        ;LDQ #$02030405
-        ;STQ $D027
-        ;LDQ #$06070809
-        ;STQ $D02B
+        LDQ #$02030405
+        STQ $D027
+        LDQ #$06070809
+        STQ $D02B
         
-        LDA #2
-        LDY #$D027
-setsc:  STA ,Y+
-        INCA
-        CMPA #10
-        BNE setsc
-        
+     
         ; Set sprite positions.
         LDA #$00
         STA $D010       ; Sprites x-coords bit 8.
@@ -622,8 +620,23 @@ sprite_def:
 
 
 
+; ==================== Handle autostart ROM ====================
+; Scan for autostart ROM at $8000.
+; This search for the 5-bytes signature at $8004 and returns Z=1 if ROM found.
+scan_autostart_ROM:
+            LDB #5              ; Five characters to test
+            LDX #$8004
+            LDY #signature_AS_ROM
+loop_ASchk: LDA ,X+
+            CMPA ,Y+
+            BNE end_ASchk       ; Exit if no match.
+            DECB
+            BNE loop_ASchk           ; Loop if not all done.
+            ; If we are here, then Z=1 (ROM found).
+end_ASchk:  RTS             
 
-
+; Autostart ROM signature (to check).
+signature_AS_ROM: .str "DDT25" ; Unlike Commodore's signature, this is ASCII.
 
 
 ; ===================================================================
@@ -1182,8 +1195,6 @@ wait_ser_data_lo:
                 JSR get_ser_data_status_in_C ; get the serial data status in Cb
                 BCS wait_ser_data_lo ; if the serial data is high go wait some more
                 ANDCC #$EF      ; enable the interrupts
-            ;LDB #0
-            ;STB $D020
                 RTS             ; All done.
 
                 ; ERROR: Device not present
@@ -1258,8 +1269,6 @@ send_deferred:
 defer_byte:
                 STA $95         ; save the defered Tx byte
                 ANDCC #$FE      ; Clear carry to flag ok.
-            ;LDB #0
-            ;STB $D020
 
                 RTS
 
@@ -1300,8 +1309,6 @@ unlisten_delay: DECE            ; [2 cycles] decrement the count
 ;===========================================================
 ; Receive a byte from the serial port and put it in A.
 recv_serial_byte: ; Was $EE13
-            LDB #5 ; green
-            STB $D020
                 ; Input a byte from the serial bus
                 ORCC #$10       ; disable the interrupts
                 LDA #$00        ; set 0 bits to do, will flag EOI on timeour
@@ -1371,22 +1378,15 @@ label_EE80:
                 LDA $A4         ; get the received byte
                 ANDCC #$EF      ; enable the interrupts
                 ANDCC #$FE      ; Clear carry to flag ok.
-            ;LDB #0
-            ;STB $D020
-            STA $05E1                
                 RTS             
 
 
 ;===========================================================
 ; Set the serial clock out high
 set_ser_clock_out_high: ; Was $EE85
-            ;LDB #8 ; orange
-            ;STB $D020
                 LDA $DD00       ; read CIA2 DRA, serial port and video address
                 ANDA #$EF       ; mask xxx0 xxxx, set serial clock out high
                 STA $DD00       ; save CIA2 DRA, serial port and video address
-            ;LDB #0
-            ;STB $D020
                 RTS  
 
 ;===========================================================
@@ -1400,38 +1400,26 @@ set_ser_clock_out_low: ; Was $EE8E
 ;===========================================================
 ; Set the serial data out high
 set_ser_data_out_high: ; Was $EE97
-            ;LDB #4 ; magenta
-            ;STB $D020
                 LDA $DD00       ; read CIA2 DRA, serial port and video address
                 ANDA #$DF       ; mask xx0x xxxx, set serial data out high
                 STA $DD00       ; save CIA2 DRA, serial port and video address
-            ;LDB #0
-            ;STB $D020                
                 RTS 
 
 ;===========================================================
 ; Set the serial data out low
 set_ser_data_out_low: ; Was $EEA0
-            ;LDB #10 ; light red
-            ;STB $D020
                 LDA $DD00       ; read CIA2 DRA, serial port and video address
                 ORA #$20        ; mask xx1x xxxx, set serial data out low
                 STA $DD00       ; save CIA2 DRA, serial port and video address
-            ;LDB #0
-            ;STB $D020                 
                 RTS  
 
 ;===========================================================
 ; Get the serial data status in Cb
 get_ser_data_status_in_C: ; Was $EEA9
-            ;LDB #7 ; yellow
-            ;STB $D020
                 LDA $DD00       ; read CIA2 DRA, serial port and video address
                 CMPA $DD00      ; compare it with itself
                 BNE get_ser_data_status_in_C ; if changing got try again
                 ASLA            ;shift the serial data into Cb
-            ;LDB #0
-            ;STB $D020                
                 RTS   
 
 ;===========================================================
@@ -1733,7 +1721,7 @@ irq:
 
 ; --- Original C64 system IRQ handler (required for CIA timing):
 irq_system:
-    INC $0404
+    INC $0404 ; See if IRQs are running.
         JSR inc_realtime_clock ; increment the real time clock
         LDA $DC0D       ; read CIA1 ICR, clear the timer interrupt flag
     ;RTI    
@@ -1751,7 +1739,7 @@ irq_system:
         LDA #7
         STA $D020            
         ; Wait a bit (a few cycles) for color bar to be visible.
-        LDB #$10             
+        LDB #2             
 irq_raster_delay:
         DECB
         BNE irq_raster_delay
