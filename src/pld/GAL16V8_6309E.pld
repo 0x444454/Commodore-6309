@@ -7,21 +7,29 @@
 /*   2012-03-15: Liber809 Atari version [Boisy Pitre]              */
 /*   2024-10-16: First C64 prototype. [DDT]                        */
 /*   2024-11-02: Second C64 prototype with clock-stretching. [DDT] */
-/*   2025-01-06: Support latest prototype changes                  */
+/*   2025-01-06: Support latest proto changes [DDT]                */
+/*   2025-01-25: Support latest proto changes [DDT]                */
+/*   2025-01-29: Support latest proto changes. Schem v0.8 [DDT]    */
 /*                                                                 */
 /* https://github.com/0x444454/Commodore-6309                      */
 /*                                                                 */
 /*******************************************************************/
 
-Name     Commodore6309 ;
-PartNo   U1 ;
-Date     1/6/2025 ;  /* MM/DD/YYYY */
-Revision 01 ;
-Designer DDT ;
-Company  None ;
-Assembly None ;
-Location None ;
-Device   G16V8A ;
+Name     Commodore6309;
+PartNo   IC2;
+Date     1/28/2025;  /* MM/DD/YYYY */
+Revision 01;
+Designer DDT;
+Company  None;
+Assembly None;
+Location None;
+Device   G16V8;
+
+/**************** CONTROL PINS *********************/
+
+/* PIN 10 = GND; */ /* Not assignable: GAL GND */
+/* PIN 11 = !OE; */ /* Not assignable: GAL /OE, this is connected to GND to always enable the GAL */
+/* PIN 20 = VCC; */ /* Not assignable: GAL VCC */
 
 /*************** INPUT PINS *********************/
 PIN  1 = CLK;      /* !Phi-0 in, used for falling-edge latch. This is actually the NOT_PH0 output looped-back */
@@ -31,52 +39,50 @@ PIN  4 = NOT_Q_IN; /* NOT Q-in. This is actually Phi-0 output by the 250ns clock
 PIN  5 = RDY;
 PIN  6 = AEC;
 PIN  7 = RW;
-/* PIN  8 = ; */
-/* PIN  9 = ; */
-/* PIN 10 = GND; */ /* Not assignable: GAL GND */
-
-/* PIN 11 = !OE ; */ /* Not assignable: GAL /OE, connect to GND */
-
+PIN  8 = MODE0;
+PIN  9 = MODE1;
 
 /**************** OUTPUT PINS *********************/
 /* These signals go to the 6510 socket */
 
 
-/* Counters Q0 and Q1 */
-/*
-PIN 12 = Q0;
-PIN 13 = Q1;
-*/
-
-/*PIN 12 = PH2;          /* Phi-2 */
-/*PIN 13 = RW_OUT;       /* R/W out */
-PIN 14 = RW_OUT;       /* R/W out # TSC */
-PIN 15 = TSC;          /* TSC out */
-PIN 16 = NOT_HALT;     /* 6309 /HALT */
-PIN 17 = Q_OUT;        /* 6309 quadrature clock */
+PIN 19 = NOT_PH0;      /* NOT_PH0 is the opposite of PH0 (but after GAL propagation delay), and will be wired to CLK (pin 1) allowing latch just after Phi-0 falling edge */
 PIN 18 = E;            /* 6309 clock */
-PIN 19 = NOT_PH0     ; /* !Phi-0 is the opposite of PH0, slightly delayed, and will be wired to CLK (pin 1) allowing latch on Phi-0 falling edge */
-/* PIN 20 = Vcc ; */
+PIN 17 = Q_OUT;        /* 6309 quadrature clock */
+PIN 16 = NOT_HALT;     /* 6309 /HALT */
+PIN 15 = TSC;          /* TSC out */
+PIN 14 = RW_OUT;       /* R/W out */
 
+/* PIN 13 = PH2_LB; */     /* phi-2 looped-back */
+/* PIN 12 = PH2; */          /* Phi-2 */
+
+
+/* Counters Q0 and Q1 */
+
+PIN 13 = Q1;
+PIN 12 = Q0;
 
 
 /* Delay Phi-0 to generate Phi-2 */
-NOT_PH0    =   !PH0;     /* NOT_PH0 is looped back to CLK using a trace on the PCB */
-PH2        =   !CLK;     /* PH2 should be PH0 delayed by about 20ns, but it actually seems to required > 50 ns ??? */
+NOT_PH0    =   !PH0;            /* NOT_PH0 is looped back to CLK using a trace on the PCB */
 
-TSC        =   !AEC;     /* TSC is the opposite of AEC */
-RW_OUT     =   RW # TSC; /* Mimick Liber809 */
+/*E          =   PH0 & RDY;       /* E-clock. Stretch if !RDY. */
+/*Q_OUT      =   !NOT_Q_IN & RDY; /* Q-clock. Stretch if !RDY. */
+E          =   PH0 & (MODE0&(!Q0 # !Q1) # RDY);       /* E-clock. Stretch if !RDY after 3 clocks. */
+Q_OUT      =   !NOT_Q_IN & (MODE0&(!Q0 # !Q1) # RDY); /* Q-clock. Stretch if !RDY after 3 clocks. */
+
 NOT_HALT   =   RDY;
+/*NOT_HALT   =   !Q0 # !Q1 # RDY;*/
 
-E        = PH0 & RDY;         /* Clock stretch if !RDY. */
-Q_OUT    = !NOT_Q_IN & RDY;   /* Clock stretch if !RDY. */
+TSC        =   !AEC;
+/*TSC        =   !AEC # !(!Q0 # !Q1 # RDY);            /* TSC is the opposite of AEC */
 
+RW_OUT     =   RW # TSC;        /* Mimick Liber809 */
 
+/*PH2_LB     =   !CLK;            /* PH2_LB is PH0 plus 2x GAL signal delay */
+/*PH2        =   PH0;             /* PH2    is PH0 plus 1x GAL signal delay */
 
 /* Two bits counter for 6510 simulation of RDY low */
-/* These are not yet used */
-/*
 Q0.d = !RDY & ((Q1 & Q0) # !Q0);
 Q1.d = !RDY & (Q1 # Q0);
-*/
 
