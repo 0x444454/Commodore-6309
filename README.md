@@ -36,16 +36,13 @@ IRQ is working. FIRQ is also functional, but the C64 only has one IRQ signal, so
 VIC-II raster interrupts are working.  
 File loading from floppy drive is working (beta). Use a real 1541 drive or a 100% compatible modern device like the Pi1541. Next step is support for OS bootstrap (e.g. NitrOS-9 loader).
 
-
-There are problems after enabling sprites. Even one single sprite will cause the system to crash.  
-This might be due to prototype wiring using a breadboard (signal timings and power issues).  
-Problem is being investigated.
+There are still problems when sprites are enabled. Problem is being investigated.
 
 # INGREDIENTS
 
 - C64. I have a classic 250407 motherboard, but this should work with all models (to be verified).
 - Hitachi 63C09E. Note the "E" at the end.
-- Support Logic for clock delays and quadrature: DS1100Z-250 delay line.
+- Support Logic for clock delays and quadrature: DS1100Z-50 and DS1100Z-250 delay lines.
 - Support Logic for 6510 to 6309 signals translation: GAL16V8. I use a GAL16V8D-15, but similar parts should work.
 - 40-pin socket to plug/solder the signal wires, because we don't want to alter the onboard CPU socket. We may want to plug the 6510 there again eventually ;-)
 - Breadboard(s) for the three external chips (63C09E, GAL16V8, DS1100Z-250).
@@ -109,5 +106,6 @@ Note the random missing characters pixel lines, due to timing issues that have b
 
 - Design prototype PCB daughterboard the plugs into the 6510 socket. This will improve timing precision and make prototyping more comfortable.
 - Implement a minimalistic CPU monitor in ROM.
+- Port the 586220-Diagnostics ROM to 6309, supporting harness.
 - Improve the prototype and design a final version using the Expansion Port.
 
