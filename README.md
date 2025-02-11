@@ -45,7 +45,7 @@ There are still problems when sprites are enabled. Problem is being investigated
 - Support Logic for clock delays and quadrature: DS1100Z-50 and DS1100Z-250 delay lines.
 - Support Logic for 6510 to 6309 signals translation: GAL16V8. I use a GAL16V8D-15, but similar parts should work.
 - 40-pin socket to plug/solder the signal wires, because we don't want to alter the onboard CPU socket. We may want to plug the 6510 there again eventually ;-)
-- Breadboard(s) for the three external chips (63C09E, GAL16V8, DS1100Z-250).
+- Breadboard(s) for the four external chips (63C09E, GAL16V8, DS1100Z-50, DS1100Z-250).
 - Lots of wires.
 - Replacement 6309 Kernal ROM. I use BackBit's CornBit (2364) Flash ROM.
 
@@ -104,8 +104,8 @@ Note the random missing characters pixel lines, due to timing issues that have b
 
 # NEXT STEPS
 
-- Design prototype PCB daughterboard the plugs into the 6510 socket. This will improve timing precision and make prototyping more comfortable.
+- Prototype PCB daughterboard the plugs into the 6510 socket is almost ready (thanks to Gary Becker). This will improve timing precision and make prototyping more comfortable.
 - Implement a minimalistic CPU monitor in ROM.
 - Port the 586220-Diagnostics ROM to 6309, supporting harness.
-- Improve the prototype and design a final version using the Expansion Port.
+- Improve the prototype and design a final version using the Expansion Port and Kernal replacement.
 
