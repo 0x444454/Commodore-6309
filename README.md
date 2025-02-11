@@ -104,7 +104,7 @@ Note the random missing characters pixel lines, due to timing issues that have b
 
 # NEXT STEPS
 
-- Prototype PCB daughterboard the plugs into the 6510 socket is almost ready (thanks to Gary Becker). This will improve timing precision and make prototyping more comfortable.
+- Prototype PCB daughterboard that plugs into the 6510 socket is almost ready (thanks to Gary Becker). This will improve timing precision and make prototyping more comfortable.
 - Implement a minimalistic CPU monitor in ROM.
 - Port the 586220-Diagnostics ROM to 6309, supporting harness.
 - Improve the prototype and design a final version using the Expansion Port and Kernal replacement.
