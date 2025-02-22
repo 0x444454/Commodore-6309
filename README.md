@@ -74,7 +74,7 @@ I use the _BackBit CornBit_ flash ROM to simplify development.
 - Replace the original Kernal ROM with the 6309 ROM.
 - Power on the system with the 6510. You should see the message "6510 detected. insert 6309 with adapter". This is to verify your ROM is programmed successfully. __Do NOT insert the 6309 directly in the 6510 socket__. You need the adapter PCB, or your breadboard version of the adapter circuit described in the [schematics](./hardware/).
 - Remove the 6510 CPU and store it safely.
-- Plug the adapter PCB with the 6309 CPU in the 6510 socket. Be sure to insert it correctly, i.e. the writings on the PCB are not upside down (see picture below).
+- Plug the adapter PCB with the 6309 CPU in the 6510 socket. Be sure to insert the PCB correctly, i.e. the writings on the PCB are not upside down (see picture below). Then look below the PCB, and check that all 40 pins are inside the 6510 socket.
 - Plug a joystick in port 2 to control the test performed by the Kernal.
 - Power on the C64. If you don't see a screen with red border, white background, and colored characters in less than 3 seconds, then turn off your C64 immediately and troubleshoot the adapter.
 - At any time, you can remove the adapter PCB and plug-in the 6510 again to verify you didn't fry anything. The 6309 Kernal ROM also supports the 6510 and should show some text and sprites.
