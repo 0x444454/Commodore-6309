@@ -1,6 +1,6 @@
 # Commodore-6309 hardware
 
-Here are the schematics and KiCad 8 files (coming soon).  
+Here are the schematics and KiCad 8 files.  
 
 The PCB has been designed by Gary Becker (thanks !).  
 Note that the current PCB v0.8 is __intended for debugging purposes__ and requires soldering several jumpers and probe points that won't be in the final simplified version.
