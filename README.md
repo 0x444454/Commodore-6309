@@ -57,7 +57,7 @@ The PCB has been designed by Gary Becker (thanks !). Note that the current PCB v
 
 ![clock adjustment and quadrature](media/20250221-proto_v0.8-assembled-small.jpg)
 
-The PCB design is available on [PCBWay](https://www.pcbway.com/project/shareproject/Commodore_6309_A_new_CPU_for_the_Commodore_64_4cdcbc60.html). Again, please note that the current version is not a final product, is intended for hardware debugging, and comes with absolutely no warranty.
+The PCB is available as a shared project on [PCBWay](https://www.pcbway.com/project/shareproject/Commodore_6309_A_new_CPU_for_the_Commodore_64_4cdcbc60.html). Again, please note that the current version is not a final product, is intended for hardware debugging, and comes with absolutely no warranty.
 
 The PCB is derived from the one Gary designed for the [liber809](https://github.com/boisy/liber809) project targeting Atari 8-bit computers. Kudos to Boisy Pitre for the great support !
 
