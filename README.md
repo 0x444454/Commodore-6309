@@ -105,11 +105,6 @@ NOTE: My old logic probe only had 16 inputs, so I had to use the upper two bits 
 ![logic probe commented](media/2024-10-05_probe_commented.jpg)
 
   
-And this is my fixed point Mandelbrot generator. The 40x25 image is generated in about 1.5 seconds using max_iters = 16.  
-Note the random missing characters pixel lines, due to timing issues that have been fixed after taking this picture.
-
-![6309 mandel](media/20241102-6309-mandel.jpg)
-
 # NEXT STEPS
 
 - Implement a minimalistic CPU monitor in ROM, also allowing to launch tests and benchmarks.
