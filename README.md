@@ -67,7 +67,7 @@ At the moment, the Kernal only sets up the VIC-II and runs some test programs.
 I use the _BackBit CornBit_ flash ROM to simplify development.
 
 # PREPARATION
-
+- Write the [JED](./release/GAL16V8_6309E.jed) binary file to program the GAL16V8D. I use a XGecu T48 programmer.
 - Assemble the PCB. Note that the 10μF capacitor needs to be mounted with the + leg on the left. Ignore the small "+" symbol on the silkscreen, and check the picture of the assembled PCB above. Note that all but 1 resistor in the PCB are 0 (zero) Ω, so you can simply replace them with jumper wires.
 - Replacement 6309 Kernal ROM from this project. I use BackBit's CornBit (2364) Flash ROM.
 - Write the desired ".rom" file on a 8 KByte ROM (EPROM or Flash).
