@@ -40,25 +40,28 @@ There are still problems when sprites are enabled. Problem is being investigated
 
 # INGREDIENTS
 
-- C64. I have a classic 250407 motherboard, but this should work with all models (to be verified).
+- A Commodore 64. I have a classic breadbin with motherboard rev 250407, but this should work with other models (to be verified). Note that motherboard rev 326298 (the oldest) will __not__ work, due to physical constraints.
+- The doughterboard [PCB](#pcb-and-schematics). Alternatively, you may also use a breadboard and and wire (lots of wires) according to schematics. :-)
 - Hitachi 63C09E. Note the "E" at the end.
-- Support Logic for clock delays and quadrature: DS1100Z-50 and DS1100Z-250 delay lines.
-- Support Logic for 6510 to 6309 signals translation: GAL16V8. I use a GAL16V8D-15, but similar parts should work.
+- Support Logic for clock delays and quadrature: DS1100Z-50 and DS1100Z-250 delay lines. I like using DIP chips, but the PCB supports also SOP.
+- Support Logic for 6510 to 6309 signals translation: GAL16V8. I use a GAL16V8D-10, but similar parts should work.
 - 40-pin socket to plug/solder the signal wires, because we don't want to alter the onboard CPU socket. We may want to plug the 6510 there again eventually ;-)
 - Breadboard(s) for the four external chips (63C09E, GAL16V8, DS1100Z-50, DS1100Z-250).
 - Lots of wires.
 - Replacement 6309 Kernal ROM. I use BackBit's CornBit (2364) Flash ROM.
 
 
-# SCHEMATICS
+# PCB AND SCHEMATICS
 
 See the hardware section: [hardware](./hardware/)
 
-A **proper** PCB is work in progress.  
+A PCB has been designed by Gary Becker. Note that the current PCB v0.8 is __intended for debugging purposes__ and requires soldering several jumpers and probe points that won't be in the final simplified version.
 
-Here is how the current prototype looks like (half of the wires are for debugging using the logic analyzer):
+![clock adjustment and quadrature](media/20250221-proto_v0.8-assembled-small.jpg)
 
-![clock adjustment and quadrature](media/2025-01-08-prototype.jpg)
+The PCB design is available on [PCBWay](https://www.pcbway.com/project/shareproject/Commodore_6309_A_new_CPU_for_the_Commodore_64_4cdcbc60.html). Again, please note that the current version is not a final product, is intended for hardware debugging, and comes with absolutely no warranty.
+
+The PCB is derived from the one Gary designed for the [liber809](https://github.com/boisy/liber809) project targeting Atari 8-bit computers. Kudos to Boisy Pitre for the great support !
 
 # KERNAL ROM
 
@@ -86,7 +89,7 @@ At the moment, the 6309 Kernal ROM only sets up the VIC-II, CIA1, and runs a tes
 IRQ is supported (e.g. VIC-II raster interrupts).  
 Better demos will come in the future.
 
-![6309 running](media/2024-10-05_6309_running.jpg)
+![6309 running](media/20250220-Proto_PCB_v0.8-test.jpg)
 
 This is the ROM execution visualized using a logic probe. Open the image in a new window to see it bigger.  
 Note that the first thing the 6309 does is fetching the 16-bit reset vector at $FFFE/$FFFF.  
