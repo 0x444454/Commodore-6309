@@ -1,9 +1,13 @@
 # Commodore-6309 hardware
 
-Here are the KiCad 8 hardware design files.  
-Schematics are also available as a plain PDF.  
-  
-PCB is still work in progress.
+The PCB has been designed by Gary Becker (thanks !).  
+Note that the current PCB v0.8 is __intended for debugging purposes__ and requires soldering several jumpers and probe points that won't be in the final simplified version.
+
+![clock adjustment and quadrature](media/20250221-proto_v0.8-assembled-small.jpg)
+
+The PCB design is available on [PCBWay](https://www.pcbway.com/project/shareproject/Commodore_6309_A_new_CPU_for_the_Commodore_64_4cdcbc60.html). Again, please note that the current version is not a final product, is intended for hardware debugging, and comes with absolutely no warranty.
+
+The PCB is derived from the one Gary designed for the [liber809](https://github.com/boisy/liber809) project targeting Atari 8-bit computers. Kudos to Boisy Pitre for the great support !
 
 # DISCLAIMER
 
