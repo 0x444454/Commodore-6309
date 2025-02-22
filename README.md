@@ -63,16 +63,18 @@ The PCB is derived from the one Gary designed for the [liber809](https://github.
 
 # KERNAL ROM
 
+Yes, Commodore says "Kernal" not "Kernel" :-)  
+
 The 8KB Kernal ROM for the prototype works with both 6309 (adapted via PCB) and 6510, as they have different reset vectors, so we can store both 6309 and 6510 initialization code.  
 At the moment:
 
-- The 6510 code at the moment only displays a message telling that a 6510 has been detected.
+- The 6510 code only displays a message telling that a 6510 has been detected. Don't expect any more than that.
 - The 6309 code sets up the VIC-II and runs some test programs. Use joystick to select tests (see below).
 
 I use the _BackBit CornBit_ flash ROM to simplify development. This requires a custom ROM programmer, but has nice features like hosting multiple ROMs and select them using jumpers.  
 Other Flash ROM products can be programmed using a standard EPROM programmer like the XGecu.  
 
-Note that the Kernal ROM in newer C64C models using motherboard revision 250469 is stored together with the BASIC ROM in a single 16KB chip (8KB BASIC + 8 KB KERNAL). The adapter disables the BASIC ROM, so you can simply duplicate the KERNAL ROM to obtain a 16KB file to write to your ROM.
+Note that the Kernal ROM in newer C64C models using motherboard revision 250469 is stored together with the BASIC ROM in a single 16KB chip (8KB BASIC + 8 KB KERNAL). Our adapter disables the BASIC ROM, so you can simply duplicate the KERNAL ROM to obtain a 16KB file to write to your ROM. Only the Kernal part will be used.
 
 # PREPARATION
 - Write the [JED](./release/GAL16V8_6309E.jed) binary file to program the GAL16V8D. I use a XGecu T48 programmer.
