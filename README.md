@@ -43,11 +43,9 @@ There are still problems when sprites are enabled. Problem is being investigated
 - A Commodore 64. I have a classic breadbin with motherboard rev 250407, but this should work with other models (to be verified). Note that motherboard rev 326298 (the oldest) will __not__ work, due to physical constraints.
 - The doughterboard [PCB](#pcb-and-schematics). Alternatively, you may also use a breadboard and and wire (lots of wires) according to schematics. :-)
 - Hitachi 63C09E. Note the "E" at the end.
-- Support Logic for clock delays and quadrature: DS1100Z-50 and DS1100Z-250 delay lines. I like using DIP chips, but the PCB supports also SOP.
-- Support Logic for 6510 to 6309 signals translation: GAL16V8. I use a GAL16V8D-10, but similar parts should work.
-- 40-pin socket to plug/solder the signal wires, because we don't want to alter the onboard CPU socket. We may want to plug the 6510 there again eventually ;-)
-- Breadboard(s) for the four external chips (63C09E, GAL16V8, DS1100Z-50, DS1100Z-250).
-- Lots of wires.
+- Support Logic for clock delays and quadrature: DS1100Z-50 and DS1100Z-250 delay lines. I like using DIP8 chips in socket (for easy swap), but the PCB supports also SOP8 (surface mounted).
+- Support Logic for 6510 to 6309 signals translation: GAL16V8. I use a GAL16V8D-10, but parts with different timings should work (maybe up to 25 ns ? - To be tested).
+- Sockets, headers, capacitors, resistors and jumpers (see PCB project for components list). Note that all but 1 resistor in the PCB are 0 (zero) Ω, so you can simply solder jumper wires (unless you want to mod the circuit).
 - Replacement 6309 Kernal ROM. I use BackBit's CornBit (2364) Flash ROM.
 
 
@@ -55,7 +53,7 @@ There are still problems when sprites are enabled. Problem is being investigated
 
 See the hardware section: [hardware](./hardware/)
 
-A PCB has been designed by Gary Becker. Note that the current PCB v0.8 is __intended for debugging purposes__ and requires soldering several jumpers and probe points that won't be in the final simplified version.
+The PCB has been designed by Gary Becker (thanks !). Note that the current PCB v0.8 is __intended for debugging purposes__ and requires soldering several jumpers and probe points that won't be in the final simplified version.
 
 ![clock adjustment and quadrature](media/20250221-proto_v0.8-assembled-small.jpg)
 
