@@ -1,9 +1,11 @@
 # Commodore-6309 hardware
 
+Here are the schematics and KiCad 8 files (coming soon).  
+
 The PCB has been designed by Gary Becker (thanks !).  
 Note that the current PCB v0.8 is __intended for debugging purposes__ and requires soldering several jumpers and probe points that won't be in the final simplified version.
 
-![clock adjustment and quadrature](media/20250221-proto_v0.8-assembled-small.jpg)
+![clock adjustment and quadrature](../media/20250221-proto_v0.8-assembled-small.jpg)
 
 The PCB design is available on [PCBWay](https://www.pcbway.com/project/shareproject/Commodore_6309_A_new_CPU_for_the_Commodore_64_4cdcbc60.html). Again, please note that the current version is not a final product, is intended for hardware debugging, and comes with absolutely no warranty.
 
