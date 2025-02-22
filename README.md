@@ -36,11 +36,12 @@ IRQ is working. FIRQ is also functional, but the C64 only has one IRQ signal, so
 VIC-II raster interrupts are working.  
 File loading from floppy drive is working (beta). Use a real 1541 drive or a 100% compatible modern device like the Pi1541. Next step is support for OS bootstrap (e.g. NitrOS-9 loader). File loading seems to fail randomly on PAL systems (to be investigated).
 There are still problems when sprites are enabled (to be investigated).
+Development is done on a NTSC C64 with motherboard revision 250407 (the most common). Other motherboard revisions may work but are not officially supported at the moment (no time to test all of them).
 
 # INGREDIENTS
 
-- A Commodore 64. I have a classic breadbin with motherboard rev 250407, but this should work with other models (to be verified). Note that motherboard rev 326298 (the oldest) will __not__ work, due to physical constraints.
-- The doughterboard [PCB](#pcb-and-schematics). Alternatively, you may also use a breadboard and and wire (lots of wires) according to schematics. :-)
+- A Commodore 64. I have a classic breadbin with motherboard rev 250407, but this should work with other models (to be verified). Motherboard rev 326298 (the oldest) is unlikely to work, due to physical constraints.
+- The adapter board [PCB](#pcb-and-schematics). Alternatively, you may also use a breadboard and and wire (lots of wires) according to schematics. :-)
 - Hitachi 63C09E. Note the "E" at the end.
 - Support Logic for clock delays and quadrature: DS1100Z-50 and DS1100Z-250 delay lines. I like using DIP8 chips in socket (for easy swap), but the PCB supports also SOP8 (surface mounted).
 - Support Logic for 6510 to 6309 signals translation: GAL16V8. I use a GAL16V8D-10, but parts with different timings should work (maybe up to 25 ns ? - To be tested).
@@ -62,16 +63,22 @@ The PCB is derived from the one Gary designed for the [liber809](https://github.
 
 # KERNAL ROM
 
-The Kernal ROM for the prototype works with both 6309 and 6510 (they have different reset vectors).
-At the moment, the Kernal only sets up the VIC-II and runs some test programs.
-I use the _BackBit CornBit_ flash ROM to simplify development.
+The 8KB Kernal ROM for the prototype works with both 6309 (adapted via PCB) and 6510, as they have different reset vectors, so we can store both 6309 and 6510 initialization code.  
+At the moment:
+
+- The 6510 code at the moment only displays a message telling that a 6510 has been detected.
+- The 6309 code sets up the VIC-II and runs some test programs. Use joystick to select tests (see below).
+
+I use the _BackBit CornBit_ flash ROM to simplify development. This requires a custom ROM programmer, but has nice features like hosting multiple ROMs and select them using jumpers.  
+Other Flash ROM products can be programmed using a standard EPROM programmer like the XGecu.  
+
+Note that the Kernal ROM in newer C64C models using motherboard revision 250469 is stored together with the BASIC ROM in a single 16KB chip (8KB BASIC + 8 KB KERNAL). The adapter disables the BASIC ROM, so you can simply duplicate the KERNAL ROM to obtain a 16KB file to write to your ROM.
 
 # PREPARATION
 - Write the [JED](./release/GAL16V8_6309E.jed) binary file to program the GAL16V8D. I use a XGecu T48 programmer.
 - Assemble the PCB. Note that the 10μF capacitor needs to be mounted with the + leg on the left. Ignore the small "+" symbol on the silkscreen, and check the picture of the assembled PCB above. Note that all but 1 resistor in the PCB are 0 (zero) Ω, so you can simply replace them with jumper wires.
-- Replacement 6309 Kernal ROM from this project. I use BackBit's CornBit (2364) Flash ROM.
-- Write the desired ".rom" file on a 8 KByte ROM (EPROM or Flash).
-- Replace the original Kernal ROM with the 6309 ROM.
+- Write the [6309 Kernal](./release/1-k6309.rom) or other ".rom" file to test on your replacement ROM.
+- Replace the original C64 Kernal ROM (U4) with the 6309 Kernal ROM.
 - Power on the system with the 6510. You should see the message "6510 detected. insert 6309 with adapter". This is to verify your ROM is programmed successfully. __Do NOT insert the 6309 directly in the 6510 socket__. You need the adapter PCB, or your breadboard version of the adapter circuit described in the [schematics](./hardware/).
 - Remove the 6510 CPU and store it safely.
 - Plug the adapter PCB with the 6309 CPU in the 6510 socket. Be sure to insert the PCB correctly, i.e. the writings on the PCB are not upside down (see picture below). Then look below the PCB, and check that all 40 pins are inside the 6510 socket.
