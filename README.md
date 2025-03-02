@@ -77,8 +77,10 @@ Other Flash ROM products can be programmed using a standard EPROM programmer lik
 Note that the Kernal ROM in newer C64C models using motherboard revision 250469 is stored together with the BASIC ROM in a single 16KB chip (8KB BASIC + 8 KB KERNAL). Our adapter disables the BASIC ROM, so you can simply duplicate the KERNAL ROM to obtain a 16KB file to write to your ROM. Only the Kernal part will be used.
 
 # PREPARATION
+- Remember: Check that your C64 board revision is supported. Unsupported boards __may__ work with different jumper settings.
 - Write the [JED](./release/GAL16V8_6309E.jed) binary file to program the GAL16V8D. I use a XGecu T48 programmer.
 - Assemble the PCB. Note that the 10μF capacitor needs to be mounted with the + leg on the left. Ignore the small "+" symbol on the silkscreen, and check the picture of the assembled PCB above. Note that all but 1 resistor in the PCB are 0 (zero) Ω, so you can simply replace them with jumper wires.
+- NTSC vs PAL: Default jumpers for NTSC. For PAL, change jumper "R25" from IC3 TAP4 to IC3 TAP5.
 - Write the [6309 Kernal](./release/1-k6309.rom) or other ".rom" file to test on your replacement ROM.
 - Replace the original C64 Kernal ROM (U4) with the 6309 Kernal ROM.
 - Power on the system with the 6510. You should see the message "6510 detected. insert 6309 with adapter". This is to verify your ROM is programmed successfully. __Do NOT insert the 6309 directly in the 6510 socket__. You need the adapter PCB, or your breadboard version of the adapter circuit described in the [schematics](./hardware/).
