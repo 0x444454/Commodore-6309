@@ -1,7 +1,6 @@
 # Commodore-6309
 
 This experimental project shows how to transplant and run a Hitachi 6309 CPU instead of the MOS 6510 on a Commodore 64.
-A 6809 should also work, but we love the faster and more advanced 6309.
 Be sure to read the disclaimer below.
 
 # DISCLAIMER
@@ -42,7 +41,7 @@ Development is done on a NTSC C64 with motherboard revision 250407 (the most com
 
 - A Commodore 64. I have a classic breadbin with motherboard rev 250407, but this should work with other models (to be verified). Motherboard rev 326298 (the oldest) is unlikely to work, due to physical constraints.
 - The adapter board [PCB](#pcb-and-schematics). Alternatively, you may also use a breadboard and and wire (lots of wires) according to schematics. :-)
-- Hitachi 63C09E. Note the "E" at the end.
+- Hitachi 63C09E. Note the "E" after the "9". These chips are usually marked "HD63C09**E**P", where "HD" stands for "Hitachi Device" and the "P" denotes the plastic DIP40 package.
 - Support Logic for clock delays and quadrature: DS1100Z-50 and DS1100Z-250 delay lines. I like using DIP8 chips in socket (for easy swap), but the PCB supports also SOP8 (surface mounted).
 - Support Logic for 6510 to 6309 signals translation: GAL16V8. I use a GAL16V8D-10, but parts with different timings should work (maybe up to 25 ns ? - To be tested).
 - Sockets, headers, capacitors, resistors and jumpers (see PCB project for components list). Note that all but 1 resistor in the PCB are 0 (zero) Ω, so you can simply replace them with jumper wires.
