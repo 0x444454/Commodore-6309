@@ -7,10 +7,10 @@ l
 ;   2024-09-24: First simple test loop. [DDT]
 ;   2025-01-03: Use joy-2 input for more flexible tests.
 
-BUILD_ROM = 0
+BUILD_ROM = 1
 
 .if BUILD_ROM
-        * = $F0F8   ; Use to build ROM for 6309 Kernal in 6510 mode.
+        * = $FBFD   ; Use to build ROM for 6309 Kernal in 6510 mode.
 .else        
         * = $C000   ; Use for testing this code as a PRG.
 .endif        
@@ -84,60 +84,60 @@ done_prt:
         JSR Sprites_test
             
 foreva:
-
-        ; Check joystick input on control port 2.
-read_joy:        
-        LDA $DC00           ; Read CIA1:PRA. This is [xxxFRLDU]. All signals active low.
-        AND #$1F            ; Get only joy-2 actions.
-        TAX
-        AND #$10            ; Check if FIRE pressed.
-        BEQ read_joy        ; If FIRE pressed, pause.
-        
-        TXA                 ; Retreive read value.
-        CMP #$1F            ; Check for any joy input.
-        BEQ end_input       ; No joy input.
-        
-        ; Process joy input (active low).
-        TXA
-        AND #$01            ; Check if UP.
-        BNE no_U            ; UP not pressed.
-        ; UP
-        JMP end_input
-no_U:   TXA
-        AND #$02            ; Check if DOWN.
-        BNE no_D            ; DOWN not pressed.
-        ; DOWN
-        JMP end_input
-no_D:   TXA
-        AND #$04            ; Check if LEFT.
-        BNE no_L            ; LEFT not pressed.
-        ; LEFT
-        JMP end_input
-no_L:   TXA
-        AND #$08            ; Check if RIGHT.
-        BNE no_R            ; RIGHT not pressed.
-        ; RIGHT
-.if BUILD_ROM
-        ; Copy code to $00E0 (IRQ vector destination in ROM).
-        LDX #irq_6502_end - irq_6502
-cpy_irq_handler:
-        LDA irq_6502,X
-        STA $00E0,X
-        DEX
-        BNE cpy_irq_handler
-.else
-        ; Intercept OS IRQ vector.
-        LDA #<irq_6502      ; set interrupt vectors, pointing to interrupt service routine below
-        STA $0314
-        LDA #>irq_6502
-        STA $0315
-.endif
-        LDA #$01            ; Enable VIC-II raster interrupt.
-        STA $D01A
-        CLI                 ; Enable IRQ.
-        JMP end_input
-no_R:   
-
+;
+;        ; Check joystick input on control port 2.
+;read_joy:        
+;        LDA $DC00           ; Read CIA1:PRA. This is [xxxFRLDU]. All signals active low.
+;        AND #$1F            ; Get only joy-2 actions.
+;        TAX
+;        AND #$10            ; Check if FIRE pressed.
+;        BEQ read_joy        ; If FIRE pressed, pause.
+;        
+;        TXA                 ; Retreive read value.
+;        CMP #$1F            ; Check for any joy input.
+;        BEQ end_input       ; No joy input.
+;        
+;        ; Process joy input (active low).
+;        TXA
+;        AND #$01            ; Check if UP.
+;        BNE no_U            ; UP not pressed.
+;        ; UP
+;        JMP end_input
+;no_U:   TXA
+;        AND #$02            ; Check if DOWN.
+;        BNE no_D            ; DOWN not pressed.
+;        ; DOWN
+;        JMP end_input
+;no_D:   TXA
+;        AND #$04            ; Check if LEFT.
+;        BNE no_L            ; LEFT not pressed.
+;        ; LEFT
+;        JMP end_input
+;no_L:   TXA
+;        AND #$08            ; Check if RIGHT.
+;        BNE no_R            ; RIGHT not pressed.
+;        ; RIGHT
+;.if BUILD_ROM
+;        ; Copy code to $00E0 (IRQ vector destination in ROM).
+;        LDX #irq_6502_end - irq_6502
+;cpy_irq_handler:
+;        LDA irq_6502,X
+;        STA $00E0,X
+;        DEX
+;        BNE cpy_irq_handler
+;.else
+;        ; Intercept OS IRQ vector.
+;        LDA #<irq_6502      ; set interrupt vectors, pointing to interrupt service routine below
+;        STA $0314
+;        LDA #>irq_6502
+;        STA $0315
+;.endif
+;        LDA #$01            ; Enable VIC-II raster interrupt.
+;        STA $D01A
+;        CLI                 ; Enable IRQ.
+;        JMP end_input
+;no_R:   
+;
 end_input:        
         JSR wait_no_joy     ; Wait for no joy input.
         JMP foreva
