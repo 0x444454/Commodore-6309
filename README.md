@@ -3,6 +3,8 @@
 This experimental project shows how to transplant and run a Hitachi 6309 CPU instead of the MOS 6510 on a Commodore 64.
 Be sure to read the disclaimer below.
 
+![6309 running](media/20250319-C6309-Kernal01.jpg)
+
 # DISCLAIMER
 
 This is an experimental project and may contain flaws and errors.  
