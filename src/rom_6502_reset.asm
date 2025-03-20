@@ -6,6 +6,7 @@ l
 ; Revision history [authors in square brackets]:
 ;   2024-09-24: First simple test loop. [DDT]
 ;   2025-01-03: Use joy-2 input for more flexible tests.
+;   2025-03-19: Changed entry point in 6309 Kernal. Stripped some unneeded stuff.
 
 BUILD_ROM = 1
 
