@@ -32,12 +32,34 @@ Please add a link to this github project.
 
 _"Alive! It's alive! It's alive!"_
 
-Prototype works with preliminary test Kernal ROM, running test code like a fixed-point Mandelbrot set generator.  
-IRQ is working. FIRQ is also functional, but the C64 only has one IRQ signal, so we opted to support IRQ on the adapter PCB.
+Prototype works with Kernal v0.1 (alpha) ROM, containing a machine-code monitor with disk load functions (including autoboot).  
+Interrupts are working, including FIRQ is also functional, however the C64 only has one IRQ signal and the adapter PCB uses IRQ (unmodified).
 VIC-II raster interrupts are working.  
-File loading from floppy drive is working (beta). Use a real 1541 drive or a 100% compatible modern device like the Pi1541. Next step is support for OS bootstrap (e.g. NitrOS-9 loader). File loading seems to fail randomly on PAL systems (to be investigated).
+File loading from floppy drive is working (beta). Use a real 1541 drive or a 100% compatible modern device like the Pi1541. Autoboot is supported (wait 5 seconds after power on). File loading seems to fail randomly on PAL systems (to be investigated).  
 There are still problems when sprites are enabled (to be investigated).
-Development is done on a NTSC C64 with motherboard revision 250407 (the most common). Other motherboard revisions may work but are not officially supported at the moment (no time to test all of them).
+Development is done on a NTSC C64 with motherboard revision 250407 (the most common). 
+
+# COMPATIBILITY
+
+Motherboard compatibility table for the current v0.8 PCB:  
+- &check; = Working.  
+- ? = Untested.  
+- &cross; = Compatible adapter configuration not yet found.   
+
+| Mobo rev | VIC-II | Supported | Notes |
+| :---: | :---: | :---: | --- |
+| 250407 | NTSC  | &check; | |
+| 250407 | PAL  | &check; | |
+| 250425 | NTSC  | &check; | |
+| 250425 | PAL  | ? | |
+| 250466 | NTSC  | ? | |
+| 250466 | PAL  | ? | |
+| 250469 | NTSC  | ? | C64C, short-board (SuperPLA) |
+| 250469 | PAL  | &cross; | C64C, short-board (SuperPLA) |
+| 326298 | Any  | &cross; | Unsupported due to PCB physical dimensions |
+
+NOTE: C64 systems use very different components (whatever was cheaper at the time of production), so timings can be different even between same motherboard and VIC-II revisions.  
+If you have issues with the default configuration using IC3-TAP4 to feed IC5-IN, then try IC3-TAP5.
 
 # INGREDIENTS
 
@@ -70,7 +92,7 @@ The 8KB Kernal ROM for the prototype works with both 6309 (adapted via PCB) and 
 At the moment:
 
 - The 6510 code only displays a message telling that a 6510 has been detected. Don't expect any more than that.
-- The 6309 code sets up the VIC-II and runs some test programs. Use joystick to select tests (see below).
+- The 6309 code is a machine-code monitor with disk-load and autoboot capabilites.
 
 I use the _BackBit CornBit_ flash ROM to simplify development. This requires a custom ROM programmer, but has nice features like hosting multiple ROMs and select them using jumpers.  
 Other Flash ROM products can be programmed using a standard EPROM programmer like the XGecu.  
@@ -78,7 +100,7 @@ Other Flash ROM products can be programmed using a standard EPROM programmer lik
 Note that the Kernal ROM in newer C64C models using motherboard revision 250469 is stored together with the BASIC ROM in a single 16KB chip (8KB BASIC + 8 KB KERNAL). Our adapter disables the BASIC ROM, so you can simply duplicate the KERNAL ROM to obtain a 16KB file to write to your ROM. Only the Kernal part will be used.
 
 # PREPARATION
-- Remember: Check that your C64 board revision is supported. Unsupported boards __may__ work with different jumper settings.
+- Remember: Check that your C64 board revision is supported. Unsupported/untested boards __may__ work with different jumper settings. Feedback is welcome.
 - Write the [JED](./release/GAL16V8_6309E.jed) binary file to program the GAL16V8D. I use a XGecu T48 programmer.
 - Assemble the PCB. Note that the 10μF capacitor needs to be mounted with the + leg on the left. Ignore the small "+" symbol on the silkscreen, and check the picture of the assembled PCB above. Note that all but 1 resistor in the PCB are 0 (zero) Ω, so you can simply replace them with jumper wires.
 - NTSC vs PAL: Default jumpers for NTSC. For PAL, change jumper "R25" from IC3 TAP4 to IC3 TAP5.
