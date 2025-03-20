@@ -1,9 +1,11 @@
 # Commodore-6309
 
-This experimental project shows how to transplant and run a Hitachi 6309 CPU instead of the MOS 6510 on a Commodore 64.
+This experimental project shows how to transplant and run a Hitachi 6309 CPU instead of the MOS 6510 on a Commodore 64.  
 Be sure to read the disclaimer below.
 
-![6309 running](media/20250319-C6309-Kernal01-small.jpg)
+![6309 running](media/20250319-C6309-Kernal01-small.jpg)  
+*The 6309 machine code monitor in the v0.1 Kernal,*  
+*showing the ample register set of the 6309*
 
 # DISCLAIMER
 
@@ -13,8 +15,8 @@ I am perfectly aware that this is a new, unofficial mod I have just barely teste
 Don't try this on your main C64 machine.  
   
 **IMPORTANT**: You can damage your C64 if improper connections are made.  
-We don't even know for sure if the C64 can run a 6309 for a long time without any damage.  
-Also, you will certainly lose your warranty by opening the breadbox   ;-)  
+We don't know for sure if the C64 can run a 6309 for a long time without any damage (though I had no issues with many hours of debugging).
+Also, you will certainly lose your warranty by opening the *breadbox*   ;-)  
 
 Do not proceed further unless you accept that you are trying this mod...  
 
@@ -58,8 +60,8 @@ Motherboard compatibility table for the current v0.8 PCB:
 | 250469 | PAL  | &cross; | C64C, short-board (SuperPLA) |
 | 326298 | Any  | &cross; | Unsupported due to PCB physical dimensions |
 
-NOTE: C64 systems use very different components (whatever was cheaper at the time of production), so timings can be different even between same motherboard and VIC-II revisions.  
-If you have issues with the default configuration using IC3-TAP4 to feed IC5-IN, then try IC3-TAP5.
+NOTE: C64 systems use very different components (Commodore used whatever was cheaper at the time of production), so even two C64 machines using the same motherboard and VIC-II revision may behave differently.  
+If you have issues with the default 6309 adapter configuration (i.e. using IC3-TAP4 to feed IC5-IN), then try IC3-TAP5.
 
 # INGREDIENTS
 
@@ -109,39 +111,40 @@ Note that the Kernal ROM in newer C64C models using motherboard revision 250469 
 - Power on the system with the 6510. You should see the message "6510 detected. insert 6309 with adapter". This is to verify your ROM is programmed successfully. __Do NOT insert the 6309 directly in the 6510 socket__. You need the adapter PCB, or your breadboard version of the adapter circuit described in the [schematics](./hardware/).
 - Remove the 6510 CPU and store it safely.
 - Plug the adapter PCB with the 6309 CPU in the 6510 socket. Be sure to insert the PCB correctly, i.e. the writings on the PCB are not upside down (see picture below). Then look below the PCB, and check that all 40 pins are inside the 6510 socket.
-- Plug a joystick in port 2 to control the test performed by the Kernal.
-- Power on the C64. If you don't see a screen with red border, white background, and colored characters in less than 3 seconds, then turn off your C64 immediately and troubleshoot the adapter.
+- Power on the C64. If you don't see a screen with red border, white background, and a text message in less than 3 seconds, then turn off your C64 immediately and troubleshoot the adapter.
 - At any time, you can remove the adapter PCB and plug-in the 6510 again to verify you didn't fry anything. The 6309 Kernal ROM also supports the 6510 and should show some text and sprites.
 
 
-# RESULT
+# KERNAL COMMANDS
 
-At the moment, the 6309 Kernal ROM only sets up the VIC-II, CIAs, and starts generating a Mandelbrot fractal image.  
+The Kernal starts in autoboot mode.  
+After 5 seconds, it will load the first file on disk ("*") at $8000, and start exectuing as soon as load complete successfully.  
+You can press any key to cancel autoboot, and use the embedded machine-code monitor.  
 
-Use a joystick in port 2 to launch the following tests (keep pressed until the current fractal picture being generated is complete):
-- LEFT: Load "*" from disk drive and show loaded bytes as characters on screen. Result code in upper-left corner of screen. Total read length in upper-right corner of screen (hex format). Set PCB switch 1 to OFF if you see read errors.
-- RIGHT: Raster interrupt test. You should see a horizontal line at a fixed vertical position in the border.
-- UP: Sprites test. Currently, this only works if PCB switch 1 is ON, otherwise it may hang/reset the machine (this is being investigated).
-- DOWN: Fill screen with zeros ("@" character).
-- FIRE: Pause tests while pressed.
-  
-IRQ is supported (e.g. VIC-II raster interrupts).  
-Better demos will come in the future.
+## MONITOR COMMANDS
 
-![6309 running](media/20250220-Proto_PCB_v0.8-test.jpg)
+Here are the commands supported in v0.1. More will be added in the future.  
+| Command | Description |
+| --- | --- |
+| G [addr] | JMP to addr |
+| I | System Info |
+| J [addr] | JSR to addr |
+| L ["filename"] [addr] | Load filename at addr |
+| M [<start> [<end>]] | Display mem (hex) |
+| N [<start> [<end>]] | Display mem (bin) |
+| R | Show registers |
+| T [num] | Launch a test |
+| ; [regvalues] | Edit registers |
+| > addr [byte] ... | Edit mem |
 
-This is the ROM execution visualized using a logic probe. Open the image in a new window to see it bigger.  
-Note that the first thing the 6309 does is fetching the 16-bit reset vector at $FFFE/$FFFF.  
-Then it begins executing the ROM from address $E000.  
-
-NOTE: My old logic probe only had 16 inputs, so I had to use the upper two bits for Clock and R/W. Decoded addresses in hex at the bottom will have incorrect bit 14 and 15.
-
-![logic probe commented](media/2024-10-05_probe_commented.jpg)
-
+You can also use the combo SHIFT+RUN/STOP to bootstrap from disk.
   
 # NEXT STEPS
 
-- Implement a minimalistic CPU monitor in ROM, also allowing to launch tests and benchmarks.
+- Port NitrOS-9 to the Commodore-6309.
+- Add commmands to the machine code monitor, also allowing to launch tests and benchmarks.
 - Port the 586220-Diagnostics ROM to 6309, supporting harness.
 - Improve the prototype and design a final version using the Expansion Port and Kernal replacement.
+
+![6309 running](media/20250220-Proto_PCB_v0.8-test.jpg)  
 
