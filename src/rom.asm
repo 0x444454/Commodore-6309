@@ -96,7 +96,7 @@ no_autostart_ROM:
 ; -------------------------------        
             JSR clear_screen
             
-            ; Print "6309" in the upper left corner (at least we see something is rest of init fails).
+            ; Print "6309" in the upper left corner (at least we see something if rest of init fails).
             LDQ #$36333039 ; "6309"
             STQ $0400
             LDQ #$00000000 ; Make text black.
