@@ -35,7 +35,7 @@ Please add a link to this github project.
 _"Alive! It's alive! It's alive!"_
 
 Prototype works with Kernal v0.1 (alpha) ROM, containing a machine-code monitor with disk load functions (including autoboot).  
-Interrupts are working, including FIRQ is also functional, however the C64 only has one IRQ signal and the adapter PCB uses IRQ (unmodified).
+Interrupts are working, including FIRQ, however the C64 only has one IRQ signal and the adapter PCB uses IRQ (unmodified).
 VIC-II raster interrupts are working.  
 File loading from floppy drive is working (beta). Use a real 1541 drive or a 100% compatible modern device like the Pi1541. Autoboot is supported (wait 5 seconds after power on). File loading seems to fail randomly on PAL systems (to be investigated).  
 There are still problems when sprites are enabled (to be investigated).
@@ -57,7 +57,7 @@ Motherboard compatibility table for the current v0.8 PCB:
 | 250466 | NTSC  | ? | |
 | 250466 | PAL  | ? | |
 | 250469 | NTSC  | ? | C64C, short-board (SuperPLA) |
-| 250469 | PAL  | &cross; | C64C, short-board (SuperPLA) |
+| 250469 | PAL  | &cross; | C64C, short-board (SuperPLA), working cfg not yet found |
 | 326298 | Any  | &cross; | Unsupported due to PCB physical dimensions |
 
 NOTE: C64 systems use very different components (Commodore used whatever was cheaper at the time of production), so even two C64 machines using the same motherboard and VIC-II revision may behave differently.  
