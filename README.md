@@ -105,15 +105,16 @@ Note that the Kernal ROM in newer C64C models using motherboard revision 250469 
 - Remember: Check that your C64 board revision is supported. Unsupported/untested boards __may__ work with different jumper settings. Feedback is welcome.
 - Write the [JED](./release/GAL16V8_6309E.jed) binary file to program the GAL16V8D. I use a XGecu T48 programmer.
 - Assemble the PCB. Note that the 10μF capacitor needs to be mounted with the + leg on the left. Ignore the small "+" symbol on the silkscreen, and check the picture of the assembled PCB above. Note that all but 1 resistor in the PCB are 0 (zero) Ω, so you can simply replace them with jumper wires.
-- NTSC vs PAL: Default jumpers for NTSC. For PAL, change jumper "R25" from IC3 TAP4 to IC3 TAP5.
+- NTSC vs PAL: Default jumpers for NTSC. For PAL, change jumper "R25" from IC3 TAP4 to IC3 TAP5. See "Minimum Build" picture below.
 - Write the [6309 Kernal](./release/1-k6309.rom) or other ".rom" file to test on your replacement ROM.
 - Replace the original C64 Kernal ROM (U4) with the 6309 Kernal ROM.
 - Power on the system with the 6510. You should see the message "6510 detected. insert 6309 with adapter". This is to verify your ROM is programmed successfully. __Do NOT insert the 6309 directly in the 6510 socket__. You need the adapter PCB, or your breadboard version of the adapter circuit described in the [schematics](./hardware/).
 - Remove the 6510 CPU and store it safely.
 - Plug the adapter PCB with the 6309 CPU in the 6510 socket. Be sure to insert the PCB correctly, i.e. the writings on the PCB are not upside down (see picture below). Then look below the PCB, and check that all 40 pins are inside the 6510 socket.
-- Power on the C64. If you don't see a screen with red border, white background, and a text message in less than 3 seconds, then turn off your C64 immediately and troubleshoot the adapter.
+- Power on the C64. If you don't see a screen with red border, white background, and text in less than 3 seconds, or if you see random characters on screen, then turn off your C64 and double-check the adapter. Try also different TAP configurations (see picture below), as some C64 motherboards may require different timings.
 - At any time, you can remove the adapter PCB and plug-in the 6510 again to verify you didn't fry anything. The 6309 Kernal ROM also supports the 6510 and should show some text and sprites.
 
+![Minimum Build](media/min_build-small.jpg)  
 
 # KERNAL COMMANDS
 
