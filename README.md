@@ -128,7 +128,7 @@ Verify the adapter is correctly inserted in the 6510 socket on the motherboard. 
 ### CHECK CHIPS ORIENTATION
 - Orient the PCB as in the picture in the [PREPARATION](#PREPARATION) chapter).  
 - Make sure all chips in sockets are correctly oriented. All chips in the PCB are oriented so that their pin-1 is in the upper-left corner.
-- If you used surface-mounted delay-lines, make sure you have correctly identified pin-1. Some of them have no marks apart from a barely visible bevel on the upper side where pin-1 is.  
+- If you used surface-mounted delay-lines, make sure you have correctly identified pin-1. Some of them have no marks apart from a barely visible bevel on the side where pin-1 is.  
 
 ### PAL vs NTSC
 PAL and NTSC machines use a different system clock speed.
