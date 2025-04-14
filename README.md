@@ -132,8 +132,8 @@ Verify the adapter is correctly inserted in the 6510 socket on the motherboard. 
 
 ### PAL vs NTSC
 PAL and NTSC machines use a different system clock speed.
-- NTSC: Use IC3-TAP4 to feed IC5-IN
-- PAL:  Use IC3-TAP5 to feed IC5-IN
+- NTSC: Feed IC5-IN using IC3-TAP4  
+- PAL:  Feed IC5-IN using IC3-TAP5  
 Refer to picture in the [PREPARATION](#PREPARATION) chapter (yellow jumper settings).
 
 ### TUNING TIMINGS
