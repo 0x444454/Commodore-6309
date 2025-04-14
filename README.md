@@ -145,7 +145,7 @@ The most critical timing component in the 6309 PCB is the DS1100-50 delay line, 
 - Make sure you are using a DS1100-50 for IC3. Do not use a DS1000, which is less precise.
 - Try a GAL16V8 with different propagation delay. E.g. 10ns, 15ns, 25ns.  The delay is usually specified after a "-" character (e.g. "-15" for a 15ns part), or below the part name.
 - Try inverting Switch SW1-1.
-- Try using the setting for a different video standard (see ["PAL vs NTSC"](###PAL-vs-NTSC)).
+- Try using the setting for a different video standard (see ["PAL vs NTSC"](###PAL-vs-NTSC)). If this does not work, revert to the proper setting for your C64.
 
 # KERNAL COMMANDS
 
