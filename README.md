@@ -69,7 +69,7 @@ If you have issues with the default 6309 adapter configuration (i.e. using IC3-T
 - The adapter board [PCB](#pcb-and-schematics). Alternatively, you may also use a breadboard and and wire (lots of wires) according to schematics. :-)
 - Hitachi 63C09E. Note the "E" after the "9". These chips are usually marked "HD63C09**E**P", where "HD" stands for "Hitachi Device", the "E" stands for "External clock", and the "P" denotes the plastic package (DIP-40).
 - Support Logic for clock delays and quadrature: DS1100Z-50 and DS1100Z-250 delay lines. I like using DIP8 chips in socket (for easy swap), but the PCB supports also SOP8 (surface mounted). NOTE: I tried an old DS1000-50 (one thousand) and I got stability issues, so be sure to get the DS1100 (one thousand and one hundred).
-- Support Logic for 6510 to 6309 signals translation: GAL16V8. I use a GAL16V8D-10, but parts with different timings should work (maybe up to 25 ns ? - To be tested).
+- Support Logic for 6510 to 6309 signals translation: GAL16V8. I use a GAL16V8D-10. Parts with different propagation delay (max 25ns) should work but may require a different setup (check troubleshooting).
 - Sockets, headers, capacitors, resistors and jumpers (see PCB project for components list). Note that all but 1 resistor in the PCB are 0 (zero) Ω, so you can simply replace them with jumper wires.
 - Replacement 6309 Kernal ROM. I use BackBit's CornBit (2364) Flash ROM.
 
@@ -116,13 +116,43 @@ Note that the Kernal ROM in newer C64C models using motherboard revision 250469 
 
 ![Minimum Build](media/min_build-small.jpg)  
 
+# TROUBLESHOOTING
+
+### CHECK YOU PCB BUILD
+Verify the adapter is correctly inserted in the 6510 socket on the motherboard. It seems obvious, but the PCB hides the socket below, and misaligning pins is not that unlikely (happened to me a couple times ;-).
+
+### CHECK YOU PCB BUILD
+- Check that the "minimal build" components have been soldered (see picture in the [PREPARATION](#PREPARATION) chapter).  
+- Check for missing or cold solder joints.  
+
+### CHECK CHIPS ORIENTATION
+- Orient the PCB as in the picture in the [PREPARATION](#PREPARATION) chapter).  
+- Make sure all chips in sockets are correctly oriented. All chips in the PCB are oriented so that their pin-1 is in the upper-left corner.
+- If you used surface-mounted delay-lines, make sure you have correctly identified pin-1. Some of them have no marks apart from a barely visible bevel on the upper side where pin-1 is.  
+
+### PAL vs NTSC
+PAL and NTSC machines use a different system clock speed.
+- NTSC: Use IC3-TAP4 to feed IC5-IN
+- PAL:  Use IC3-TAP5 to feed IC5-IN
+Refer to picture in the [PREPARATION](#PREPARATION) chapter (yellow jumper settings).
+
+### TUNING TIMINGS
+Due to the difference in C64 machines, and the critical timings used in this prototype, there is a chance your system may not work even if you have correctly built your PCB and configured the board for NTSC/PAL.
+C64 machines that are identical from outside, can use very different components.  
+The most obvious case is PAL vs NTSC (different clock speed), but also different PLA types cause different signal delay and slew.  
+The most critical timing component in the 6309 PCB is the DS1100-50 delay line, and we have also seen that the GAL16V8 propagation delay has an effect.  
+- Make sure you are using a DS1100-50 for IC3. Do not use a DS1000, which is less precise.
+- Try a GAL16V8 with different propagation delay. E.g. 10ns, 15ns, 25ns.  The delay is usually specified after a "-" character (e.g. "-15" for a 15ns part), or below the part name.
+- Try inverting Switch SW1-1.
+- Try using the setting for a different video standard (see ["PAL vs NTSC"](###PAL-vs-NTSC)).
+
 # KERNAL COMMANDS
 
 The Kernal starts in autoboot mode.  
-After 5 seconds, it will load the first file on disk ("*") at $8000, and start exectuing as soon as load complete successfully.  
+After 5 seconds, it will load the first file on disk ("*") at $8000, and start exectuing as soon as load complete successfully. If you have problems with loading, try inverting Switch SW1-1.  
 You can press any key to cancel autoboot, and use the embedded machine-code monitor.  
 
-## MONITOR COMMANDS
+### MONITOR COMMANDS
 
 Here are the commands supported in v0.1. More will be added in the future.  
 | Command | Description |
@@ -145,7 +175,7 @@ You can also use the combo SHIFT+RUN/STOP to bootstrap from disk.
 - Port NitrOS-9 to the Commodore-6309.
 - Add commmands to the machine code monitor, also allowing to launch tests and benchmarks.
 - Port the 586220-Diagnostics ROM to 6309, supporting harness.
-- Improve the prototype and design a final version using the Expansion Port and Kernal replacement.
+- Improve the prototype and design a final version using the Expansion Port and dedicated ROM (no need for C64 Kernal replacement).
 
 ![6309 running](media/20250220-Proto_PCB_v0.8-test.jpg)  
 
